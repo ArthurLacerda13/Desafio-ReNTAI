@@ -1,0 +1,19 @@
+@startuml Contexto
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+title Diagrama de Contexto (Nível 1) - Módulo de Teleconsultoria (Plataforma V4H / ReNTAI)
+LAYOUT_WITH_LEGEND()
+
+Person(solicitante, "Profissional Solicitante (APS)", "Profissional de saúde na Atenção Primária que inicia solicitações de segunda opinião.")
+Person(especialista, "Médico Especialista", "Médico remoto que avalia casos complexos e emite pareceres técnicos.")
+Person(admin, "Administrador do Sistema", "Gestor técnico responsável por auditar a IA e parametrizar o ecossistema.")
+
+System(modulo_teleconsulta, "Módulo de Teleconsultoria (V4H)", "Permite a criação, tramitação, auditoria automatizada por IA e atualização em tempo real de solicitações de suporte diagnóstico.")
+System_Ext(motor_ia, "Motor de Validação por Inteligência Artificial", "Serviço externo (ou mockado) encarregado de classificar a conformidade e legibilidade dos anexos clínicos.")
+
+Rel(solicitante, modulo_teleconsulta, "Abre casos clínicos e acompanha dashboards", "HTTPS / WebSockets")
+Rel(especialista, modulo_teleconsulta, "Analisa históricos e registra pareceres", "HTTPS / JSON")
+Rel(admin, modulo_teleconsulta, "Gerencia configurações do sistema e audita logs de triagem", "HTTPS / JSON")
+Rel(modulo_teleconsulta, motor_ia, "Solicita validação de anexos clínicos", "HTTPS / JSON")
+
+@endum

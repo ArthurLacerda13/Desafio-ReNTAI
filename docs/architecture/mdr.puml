@@ -1,0 +1,83 @@
+@startuml diagrama lógico
+!theme plain
+hide circle
+skinparam linetype ortho
+
+title Esquema Relacional (MDR) - Módulo de Teleconsultoria (ReNTAI)
+
+entity "User" as user {
+  * id : UUID <<PK>>
+  --
+  * nome : VARCHAR(255)
+  * email : VARCHAR(255) <<UNIQUE>>
+  * senha : VARCHAR(255)
+  * perfil : ENUM(SOLICITANTE, ESPECIALISTA, ADMIN)
+  * data_criacao : TIMESTAMP
+}
+
+entity "Teleconsulta" as teleconsulta {
+  * id : UUID <<PK>>
+  --
+  * iniciais_paciente : VARCHAR(10)
+  * data_nascimento : DATE
+  * historia_clinica : TEXT
+  * hipotese_diagnostica : TEXT
+  * especialidade : ENUM(CARDIOLOGIA, CIRURGIA_ROBOTICA, ODONTOLOGIA, DOENCAS_RARAS, OXIGENOTERAPIA)
+  * status : ENUM(PENDENTE, EM_ANDAMENTO, CONCLUIDA, CANCELADA)
+  * data_criacao : TIMESTAMP
+  --
+  * solicitante_id : UUID <<FK>>
+  especialista_id : UUID <<FK>>
+}
+
+entity "AnexoClinico" as anexo {
+  * id : UUID <<PK>>
+  --
+  * arquivo_path : VARCHAR(500)
+  * tipo_arquivo : VARCHAR(50)
+  * data_upload : TIMESTAMP
+  --
+  * teleconsulta_id : UUID <<FK>>
+}
+
+entity "AuditoriaIA" as auditoria {
+  * id : UUID <<PK>>
+  --
+  * score_confianca : DECIMAL(5,2)
+  * provedor : VARCHAR(100)
+  * limiar_utilizado : DECIMAL(5,2)
+  * timestamp_validacao : TIMESTAMP
+  * metadata_adicional : JSONB
+  --
+  * anexo_id : UUID <<FK>>
+}
+
+entity "ParecerTecnico" as parecer {
+  * id : UUID <<PK>>
+  --
+  * conteudo_texto : TEXT
+  * data_emissao : TIMESTAMP
+  --
+  * teleconsulta_id : UUID <<FK>>
+  * especialista_id : UUID <<FK>>
+}
+
+entity "HistoricoStatus" as historico {
+  * id : UUID <<PK>>
+  --
+  * status_anterior : VARCHAR(50)
+  * status_novo : VARCHAR(50)
+  * data_alteracao : TIMESTAMP
+  --
+  * teleconsulta_id : UUID <<FK>>
+}
+
+' Relacionamentos
+user ||--o{ teleconsulta : "inicia"
+user ||--o{ parecer : "emite"
+teleconsulta ||--|{ anexo : "possui"
+teleconsulta ||--o| parecer : "gera"
+teleconsulta ||--|{ historico : "registra timeline"
+anexo ||--o| auditoria : "auditado por"
+
+@enduml

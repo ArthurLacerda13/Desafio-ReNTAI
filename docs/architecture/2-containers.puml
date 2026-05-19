@@ -1,0 +1,31 @@
+@startuml Containers
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+title Diagrama de Containers (Nível 2) - Módulo de Teleconsultoria (Plataforma V4H / ReNTAI)
+LAYOUT_WITH_LEGEND()
+
+Person(solicitante, "Profissional Solicitante (APS)", "Profissional de saúde na Atenção Primária.")
+Person(especialista, "Médico Especialista", "Médico remoto que emite pareceres.")
+Person(admin, "Administrador do Sistema", "Gestor técnico do módulo.")
+
+System_Boundary(c1, "Módulo de Teleconsultoria") {
+    Container(web_app, "Frontend Application", "Next.js, TypeScript, Tailwind CSS", "Provê a interface do usuário, dashboards reativos e formulários de teleconsulta.")
+    Container(api_app, "Backend API", "Python, Django, Django Channels", "Gerencia a lógica de negócio, autenticação JWT, integração com IA e notificações WebSockets.")
+    Container(redis, "Message Broker / Cache", "Redis", "Canal de comunicação (Channel Layer) para sincronismo de eventos via WebSockets.")
+    ContainerDb(database, "Banco de Dados Relacional", "PostgreSQL", "Armazena cadastros, teleconsultas, históricos de status e auditoria de IA (JSONB).")
+}
+
+System_Ext(motor_ia, "Motor de Validação por IA", "Serviço de classificação de conformidade de documentos.")
+
+Rel(solicitante, web_app, "Visualiza dashboards e anexa documentos", "HTTPS")
+Rel(especialista, web_app, "Analisa casos e registra pareceres", "HTTPS")
+Rel(admin, web_app, "Audita logs e gerencia perfis", "HTTPS")
+
+Rel(web_app, api_app, "Consome endpoints REST e gerencia sessão JWT", "HTTPS / JSON")
+Rel(web_app, api_app, "Recebe atualizações de status em tempo real", "WebSockets")
+
+Rel(api_app, database, "Lê e escreve dados", "SQL / TCP")
+Rel(api_app, redis, "Publica/Assina eventos de notificação", "Redis Protocol")
+Rel(api_app, motor_ia, "Envia documentos para triagem", "HTTPS / JSON")
+
+@enduml
