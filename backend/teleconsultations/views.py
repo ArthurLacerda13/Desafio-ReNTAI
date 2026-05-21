@@ -5,10 +5,12 @@ from django.shortcuts import get_object_or_404
 from .models import Teleconsultation, Attachment, Feedback, StatusHistory
 from .serializers import TeleconsultationSerializer, TeleconsultationCreateSerializer, FeedbackSerializer
 from .services.ai_engine import AIEngineFactory
+from .filters import TeleconsultationFilter
 from django.conf import settings
 
 class TeleconsultationListCreateView(generics.ListCreateAPIView):
     permission_classes = (permissions.IsAuthenticated,)
+    filterset_class = TeleconsultationFilter
 
     def get_serializer_class(self):
         if self.request.method == 'POST':
