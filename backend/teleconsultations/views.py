@@ -21,7 +21,11 @@ class TeleconsultationListCreateView(generics.ListCreateAPIView):
             return Teleconsultation.objects.filter(solicitante=user)
         elif user.role == 'ESPECIALISTA':
             # Specialists see pending cases in their area or cases assigned to them
-            return Teleconsultation.objects.filter(
+            queryset = Teleconsultation.objects.all()
+            if user.specialty:
+                queryset = queryset.filter(specialty=user.specialty)
+            
+            return queryset.filter(
                 Q(especialista=user) | 
                 Q(especialista__isnull=True, status=Teleconsultation.Status.PENDENTE)
             )
@@ -78,9 +82,22 @@ class TeleconsultationListCreateView(generics.ListCreateAPIView):
         return Response(TeleconsultationSerializer(teleconsultation).data, status=status.HTTP_201_CREATED)
 
 class TeleconsultationDetailView(generics.RetrieveAPIView):
-    queryset = Teleconsultation.objects.all()
     serializer_class = TeleconsultationSerializer
     permission_classes = (permissions.IsAuthenticated,)
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.role == 'SOLICITANTE':
+            return Teleconsultation.objects.filter(solicitante=user)
+        elif user.role == 'ESPECIALISTA':
+            queryset = Teleconsultation.objects.all()
+            if user.specialty:
+                queryset = queryset.filter(specialty=user.specialty)
+            return queryset.filter(
+                Q(especialista=user) | 
+                Q(especialista__isnull=True, status=Teleconsultation.Status.PENDENTE)
+            )
+        return Teleconsultation.objects.all()
 
 class FeedbackCreateView(generics.CreateAPIView):
     serializer_class = FeedbackSerializer
