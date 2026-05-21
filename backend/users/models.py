@@ -18,6 +18,12 @@ class User(AbstractUser):
         choices=Role.choices,
         default=Role.SOLICITANTE
     )
+    specialty = models.CharField(
+        _('specialty'),
+        max_length=100,
+        blank=True,
+        null=True
+    )
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
