@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+
+<html class="h-full antialiased" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Detalhes da Teleconsultoria - V4H ReNTAI</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1;
+        }
+        
+        /* Custom Scrollbar for inner areas */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: #cbd5e1; /* outline-variant approximation */
+            border-radius: 20px;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-container-low": "#f2f3ff",
+                      "tertiary": "#943700",
+                      "outline": "#737686",
+                      "inverse-primary": "#b4c5ff",
+                      "surface-tint": "#0053db",
+                      "on-tertiary-fixed-variant": "#7d2d00",
+                      "tertiary-fixed-dim": "#ffb596",
+                      "surface-container-lowest": "#ffffff",
+                      "on-primary-container": "#eeefff",
+                      "on-background": "#131b2e",
+                      "on-tertiary": "#ffffff",
+                      "secondary-container": "#d0e1fb",
+                      "inverse-on-surface": "#eef0ff",
+                      "on-error": "#ffffff",
+                      "surface": "#faf8ff",
+                      "on-primary-fixed-variant": "#003ea8",
+                      "primary": "#004ac6",
+                      "on-tertiary-fixed": "#360f00",
+                      "on-secondary-fixed": "#0b1c30",
+                      "on-primary": "#ffffff",
+                      "surface-container": "#eaedff",
+                      "on-secondary-fixed-variant": "#38485d",
+                      "surface-container-high": "#e2e7ff",
+                      "secondary-fixed": "#d3e4fe",
+                      "on-primary-fixed": "#00174b",
+                      "error-container": "#ffdad6",
+                      "surface-variant": "#dae2fd",
+                      "surface-bright": "#faf8ff",
+                      "on-secondary-container": "#54647a",
+                      "inverse-surface": "#283044",
+                      "secondary": "#505f76",
+                      "on-surface-variant": "#434655",
+                      "primary-container": "#2563eb",
+                      "surface-dim": "#d2d9f4",
+                      "primary-fixed": "#dbe1ff",
+                      "tertiary-fixed": "#ffdbcd",
+                      "outline-variant": "#c3c6d7",
+                      "error": "#ba1a1a",
+                      "on-error-container": "#93000a",
+                      "on-tertiary-container": "#ffede6",
+                      "on-surface": "#131b2e",
+                      "tertiary-container": "#bc4800",
+                      "on-secondary": "#ffffff",
+                      "primary-fixed-dim": "#b4c5ff",
+                      "background": "#faf8ff",
+                      "surface-container-highest": "#dae2fd",
+                      "secondary-fixed-dim": "#b7c8e1"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "margin-desktop": "40px",
+                      "sm": "12px",
+                      "margin-mobile": "16px",
+                      "xs": "4px",
+                      "gutter": "24px",
+                      "base": "8px",
+                      "md": "16px",
+                      "lg": "24px",
+                      "xl": "32px"
+              },
+              "fontFamily": {
+                      "headline-md": ["Inter"],
+                      "body-md": ["Inter"],
+                      "label-sm": ["Inter"],
+                      "body-sm": ["Inter"],
+                      "headline-sm": ["Inter"],
+                      "headline-lg": ["Inter"],
+                      "label-md": ["Inter"],
+                      "headline-xl": ["Inter"],
+                      "headline-lg-mobile": ["Inter"],
+                      "body-lg": ["Inter"]
+              },
+              "fontSize": {
+                      "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                      "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                      "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                      "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                      "headline-xl": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                      "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}]
+              }
+            }
+          }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background h-full font-sans overflow-hidden flex">
+<!-- JSON Component: SideNavBar -->
+<nav aria-label="Sidebar" class="hidden md:flex flex-col h-screen fixed left-0 top-0 overflow-y-auto bg-surface border-r border-outline-variant docked left-0 w-64 z-40 shrink-0 shadow-sm">
+<!-- Logo/Brand -->
+<div class="h-16 flex items-center px-md border-b border-outline-variant shrink-0">
+<span class="font-headline-sm text-headline-sm text-primary font-bold">V4H ReNTAI</span>
+</div>
+<!-- User Profile Area -->
+<div class="p-md border-b border-outline-variant shrink-0">
+<div class="flex items-center gap-sm">
+<img alt="Foto de perfil do médico especialista" class="w-10 h-10 rounded-full object-cover border border-outline-variant" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCmO6jgiyGBvLnUW_grcajKMlNx8fw-Im3_-T6D5rQuqfAE2tDINpLwnuQSggfSj5QV5YSvgI5yNMflaxYATmQyUEskM4WBXYRdpMON-1fpjdqhGXnUQJY0zyg_c2hguLhZuKq5uoWGSjeU_idabFHCZVBXKKeqgwOgh12fFQ6x_J7jsbyvzc-8jQ1kEG-SC-P3qcncCOxnJPyOUf9IHT8oOgxNadgbNaPK9agJq9aLhRcgLe-5Zm6Vf0DlbWDoee-aXmQ8WtshMyQ"/>
+<div>
+<h2 class="font-label-md text-label-md text-on-surface">Dr. Especialista</h2>
+<p class="font-label-sm text-label-sm text-on-surface-variant">V4H ReNTAI</p>
+</div>
+</div>
+</div>
+<!-- Navigation Links -->
+<div class="flex-1 overflow-y-auto py-sm px-xs custom-scrollbar">
+<ul class="space-y-xs">
+<li>
+<a aria-current="page" class="flex items-center gap-sm px-sm py-sm rounded-lg hover:bg-surface-container-high transition-colors text-primary font-bold border-r-4 border-primary bg-surface-container-low" href="#">
+<span class="material-symbols-outlined fill" data-icon="clinical_notes">clinical_notes</span>
+<span class="font-label-md text-label-md">Fila de Trabalho</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-sm px-sm py-sm rounded-lg hover:bg-surface-container-high transition-colors text-on-surface-variant" href="#">
+<span class="material-symbols-outlined" data-icon="history">history</span>
+<span class="font-label-md text-label-md">Histórico</span>
+</a>
+</li>
+</ul>
+</div>
+</nav>
+<!-- Main Content Wrapper (Accounts for Sidebar) -->
+<div class="flex-1 flex flex-col h-full md:ml-64 relative min-w-0">
+<!-- JSON Component: TopAppBar -->
+<header class="flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop h-16 sticky top-0 z-50 bg-surface-container-lowest shadow-sm border-b border-outline-variant shrink-0">
+<!-- Mobile Menu Button (Hidden on Desktop) -->
+<button class="md:hidden p-xs rounded-full hover:bg-surface-container text-on-surface-variant transition-colors">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<!-- Breadcrumbs / Context -->
+<div class="flex items-center gap-xs">
+<a class="text-primary hover:underline font-label-md text-label-md flex items-center" href="#">
+<span class="material-symbols-outlined text-[18px] mr-xs">arrow_back</span>
+                    Voltar
+                </a>
+<span class="text-outline-variant mx-xs">/</span>
+<span class="font-label-md text-label-md text-on-surface-variant truncate max-w-[150px] md:max-w-none">Caso #TC-2023-094</span>
+</div>
+<!-- Actions -->
+<div class="flex items-center gap-sm">
+<button aria-label="notifications" class="p-xs rounded-full hover:bg-surface-container text-on-surface-variant transition-colors">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button aria-label="settings" class="p-xs rounded-full hover:bg-surface-container text-on-surface-variant transition-colors">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+<img alt="Avatar do médico" class="w-8 h-8 rounded-full border border-outline-variant hidden md:block" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC0ZyG3IThf8lRKmNkqo-PeDMWGpmY3NBcPYjlob3q0NWL6q6N4a7eArneNTWzrV4w-J4lpphAl6vWKtC_dX8GDZG3qnYUZxc69D_duY_zNLWsHmJi_ddE8KuREaHW6K2dp23jN0yqsIRmfaHqx1J4KISkI0jhjVOf9CrWuZmtXDSzcM-EZRwk7nbNS5XIM2vnFzabOCiDS_aQlWwPVVIQmXSGQylVGmlHODNqqShZMwzAJ7DSzxEYSrPhPXUW2CWPoMFZhQryLeck"/>
+</div>
+</header>
+<!-- Page Canvas -->
+<main class="flex-1 overflow-y-auto p-margin-mobile md:p-margin-desktop bg-background custom-scrollbar">
+<div class="max-w-[1200px] mx-auto space-y-lg">
+<!-- Header Section -->
+<div class="flex flex-col md:flex-row md:items-start justify-between gap-md">
+<div>
+<h1 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-background">Avaliação Cardiológica</h1>
+<p class="font-body-md text-body-md text-on-surface-variant mt-xs flex items-center gap-xs">
+<span class="material-symbols-outlined text-[16px]">person_off</span> 
+                            Paciente M.S. • 62 anos • Risco AI: <span class="text-tertiary font-medium">Elevado</span>
+</p>
+</div>
+<div class="flex items-center gap-sm">
+<span class="inline-flex items-center gap-xs px-sm py-xs rounded-full bg-surface-container-high border border-outline-variant font-label-sm text-label-sm text-on-surface">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+                            Em Análise
+                        </span>
+</div>
+</div>
+<!-- Main Bento Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- Left Column: Prontuário & Anexos (8 cols) -->
+<div class="lg:col-span-8 space-y-gutter">
+<!-- Prontuário Unificado Card -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md md:p-lg shadow-sm">
+<h2 class="font-headline-sm text-headline-sm text-on-surface flex items-center gap-sm mb-md border-b border-outline-variant pb-xs">
+<span class="material-symbols-outlined text-primary">description</span>
+                                História Clínica e Hipótese
+                            </h2>
+<div class="space-y-md">
+<div>
+<h3 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider mb-xs">Queixa Principal</h3>
+<p class="font-body-md text-body-md text-on-surface bg-surface-container-low p-sm rounded-lg border border-outline-variant">
+                                        Dor torácica atípica há 3 dias, irradiando para membro superior esquerdo durante esforço moderado. Relata dispneia leve associada.
+                                    </p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-md">
+<div>
+<h3 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider mb-xs">Histórico Pregresso</h3>
+<ul class="list-disc list-inside font-body-sm text-body-sm text-on-surface space-y-xs ml-xs">
+<li>Hipertensão Arterial Sistêmica (HAS)</li>
+<li>Diabetes Mellitus tipo 2 (controlada)</li>
+<li>Ex-tabagista (cessou há 5 anos)</li>
+</ul>
+</div>
+<div>
+<h3 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider mb-xs">Sinais Vitais (Triagem)</h3>
+<div class="grid grid-cols-2 gap-xs">
+<div class="bg-surface-container-low p-xs rounded border border-outline-variant text-center">
+<span class="block font-label-sm text-label-sm text-on-surface-variant">PA</span>
+<span class="block font-label-md text-label-md text-on-surface">145/90 mmHg</span>
+</div>
+<div class="bg-surface-container-low p-xs rounded border border-outline-variant text-center">
+<span class="block font-label-sm text-label-sm text-on-surface-variant">FC</span>
+<span class="block font-label-md text-label-md text-on-surface">88 bpm</span>
+</div>
+</div>
+</div>
+</div>
+<div>
+<h3 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider mb-xs flex items-center gap-xs">
+<span class="material-symbols-outlined text-primary text-[18px]">psychology</span>
+                                        Hipótese do Solicitante
+                                    </h3>
+<div class="border-l-4 border-primary pl-sm py-xs">
+<p class="font-body-md text-body-md text-on-surface font-medium">Suspeita de Insuficiência Coronariana (Angina Instável).</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-xs">Solicito avaliação de ECG e conduta sobre necessidade de cateterismo de urgência ou ajuste medicamentoso ambulatorial.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Galeria de Anexos Card -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md md:p-lg shadow-sm">
+<div class="flex justify-between items-center mb-md border-b border-outline-variant pb-xs">
+<h2 class="font-headline-sm text-headline-sm text-on-surface flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary">attachment</span>
+                                    Anexos Aprovados pela IA
+                                </h2>
+<span class="bg-secondary-container text-on-secondary-container font-label-sm text-label-sm px-xs py-1 rounded">2 itens validados</span>
+</div>
+<div class="grid grid-cols-2 gap-md">
+<!-- ECG Thumbnail -->
+<div class="group relative rounded-lg border border-outline-variant overflow-hidden cursor-pointer bg-surface-container-low h-32 flex items-center justify-center">
+<div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1551076805-e1869033e561?q=80&amp;w=600&amp;auto=format&amp;fit=crop')] bg-cover bg-center opacity-70 group-hover:opacity-100 transition-opacity" data-alt="A macro, detailed photograph of a medical electrocardiogram (ECG) printout on traditional pink grid paper. The black tracing lines show a steady heartbeat rhythm. The lighting is bright and clinical, emphasizing clarity and precision. The overall aesthetic is professional, medical, and sterile, fitting a modern telemedicine platform."></div>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+<div class="absolute bottom-xs left-sm text-white">
+<p class="font-label-md text-label-md">ECG_Repouso.pdf</p>
+<p class="font-label-sm text-label-sm opacity-80 flex items-center gap-xs"><span class="material-symbols-outlined text-[14px]">check_circle</span> Qualidade OK</p>
+</div>
+<div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20">
+<span class="material-symbols-outlined text-white text-[32px] drop-shadow-md">zoom_in</span>
+</div>
+</div>
+<!-- Exame Laboratorial Thumbnail -->
+<div class="group relative rounded-lg border border-outline-variant overflow-hidden cursor-pointer bg-surface-container-low h-32 flex items-center justify-center">
+<div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1628155930542-3c7a64e2c833?q=80&amp;w=600&amp;auto=format&amp;fit=crop')] bg-cover bg-center opacity-70 group-hover:opacity-100 transition-opacity" data-alt="A clean, minimalist photo of a printed medical laboratory results report resting on a white surface. The focus is soft, highlighting columns of numerical data and medical terminology. The lighting is bright, soft, and diffuse, creating a modern, clinical atmosphere. The color palette is mostly white with crisp black text, conveying reliability and data accuracy."></div>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+<div class="absolute bottom-xs left-sm text-white">
+<p class="font-label-md text-label-md">Labs_Sangue.png</p>
+<p class="font-label-sm text-label-sm opacity-80 flex items-center gap-xs"><span class="material-symbols-outlined text-[14px]">check_circle</span> Qualidade OK</p>
+</div>
+<div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20">
+<span class="material-symbols-outlined text-white text-[32px] drop-shadow-md">zoom_in</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Timeline & Módulo Parecer (4 cols) -->
+<div class="lg:col-span-4 flex flex-col gap-gutter">
+<!-- Timeline Visual Card -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md shadow-sm">
+<h2 class="font-label-md text-label-md text-on-surface uppercase tracking-wider mb-md flex items-center gap-xs">
+<span class="material-symbols-outlined text-[18px]">timeline</span>
+                                Status do Caso
+                            </h2>
+<div class="relative pl-4 space-y-md border-l-2 border-surface-container-high ml-2">
+<!-- Step 1 -->
+<div class="relative">
+<div class="absolute -left-[23px] top-0 w-4 h-4 rounded-full bg-primary border-4 border-surface-container-lowest"></div>
+<p class="font-label-sm text-label-sm text-on-surface-variant">08:30 • Hoje</p>
+<p class="font-label-md text-label-md text-on-surface">Solicitação Criada</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant text-xs">Por Dr. A. Lima (Solicitante)</p>
+</div>
+<!-- Step 2 -->
+<div class="relative">
+<div class="absolute -left-[23px] top-0 w-4 h-4 rounded-full bg-primary border-4 border-surface-container-lowest"></div>
+<p class="font-label-sm text-label-sm text-on-surface-variant">08:35 • Hoje</p>
+<p class="font-label-md text-label-md text-on-surface flex items-center gap-xs">Anexos Validados <span class="material-symbols-outlined text-[14px] text-primary">robot_2</span></p>
+<p class="font-body-sm text-body-sm text-on-surface-variant text-xs">Qualidade de imagem e dados vitais verificados.</p>
+</div>
+<!-- Step 3 (Current) -->
+<div class="relative">
+<div class="absolute -left-[25px] top-0 w-5 h-5 rounded-full bg-surface-container-lowest border-4 border-primary shadow-[0_0_0_2px_rgba(37,99,235,0.2)]"></div>
+<p class="font-label-sm text-label-sm text-primary font-bold">Agora</p>
+<p class="font-label-md text-label-md text-on-surface">Aguardando Parecer</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant text-xs">Aberto por você.</p>
+</div>
+</div>
+</div>
+<!-- Módulo de Parecer Card (Sticky on desktop if needed, flex-1 to fill space) -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md shadow-sm flex flex-col flex-1 relative overflow-hidden group">
+<!-- Subtle highlight for focus area -->
+<div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-inverse-primary"></div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface flex items-center gap-sm mb-sm">
+<span class="material-symbols-outlined text-primary">edit_document</span>
+                                Seu Parecer Especializado
+                            </h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-md">Insira sua avaliação técnica e conduta recomendada abaixo.</p>
+<!-- Rich Text Toolbar Mock -->
+<div class="flex items-center gap-xs mb-xs bg-surface-container-low p-xs border border-b-0 border-outline-variant rounded-t-lg">
+<button class="p-1 hover:bg-surface-variant rounded text-on-surface"><span class="material-symbols-outlined text-[18px]">format_bold</span></button>
+<button class="p-1 hover:bg-surface-variant rounded text-on-surface"><span class="material-symbols-outlined text-[18px]">format_italic</span></button>
+<div class="w-px h-4 bg-outline-variant mx-1"></div>
+<button class="p-1 hover:bg-surface-variant rounded text-on-surface"><span class="material-symbols-outlined text-[18px]">format_list_bulleted</span></button>
+<button class="p-1 hover:bg-surface-variant rounded text-on-surface"><span class="material-symbols-outlined text-[18px]">format_list_numbered</span></button>
+</div>
+<!-- Text Area -->
+<textarea class="w-full flex-1 min-h-[250px] p-sm border border-outline-variant rounded-b-lg bg-surface text-on-surface font-body-md focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary resize-none custom-scrollbar transition-shadow" placeholder="Digite seu parecer aqui... Ex: Baseado no ECG apresentado e no quadro clínico, sugiro..."></textarea>
+<!-- Action Area -->
+<div class="mt-md pt-sm border-t border-outline-variant flex flex-col gap-sm">
+<div class="flex items-center gap-sm text-on-surface-variant bg-surface-container-low p-xs rounded-lg border border-outline-variant border-dashed">
+<span class="material-symbols-outlined text-[20px] text-primary">info</span>
+<span class="font-body-sm text-body-sm text-xs">Ao registrar, o status mudará automaticamente para <strong class="text-on-surface">Concluída</strong>.</span>
+</div>
+<button class="w-full bg-primary hover:bg-on-primary-fixed-variant text-on-primary font-label-md text-label-md py-sm px-md rounded-lg flex items-center justify-center gap-sm transition-colors shadow-sm relative overflow-hidden focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+<span class="material-symbols-outlined">send</span>
+                                    Registrar e Encerrar Caso
+                                </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

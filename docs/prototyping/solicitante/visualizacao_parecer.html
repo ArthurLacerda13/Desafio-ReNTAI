@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+
+<html class="light" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Visualização de Caso Concluído - V4H ReNTAI</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-fixed-dim": "#b4c5ff",
+                        "on-tertiary-container": "#ffede6",
+                        "on-primary-container": "#eeefff",
+                        "surface-container-lowest": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "on-tertiary-fixed-variant": "#7d2d00",
+                        "inverse-surface": "#283044",
+                        "tertiary-fixed-dim": "#ffb596",
+                        "on-secondary-container": "#54647a",
+                        "on-tertiary-fixed": "#360f00",
+                        "surface-container": "#eaedff",
+                        "inverse-on-surface": "#eef0ff",
+                        "background": "#faf8ff",
+                        "on-secondary-fixed-variant": "#38485d",
+                        "secondary-fixed": "#d3e4fe",
+                        "on-primary": "#ffffff",
+                        "surface-dim": "#d2d9f4",
+                        "error": "#ba1a1a",
+                        "surface-container-low": "#f2f3ff",
+                        "surface-bright": "#faf8ff",
+                        "outline-variant": "#c3c6d7",
+                        "primary-container": "#2563eb",
+                        "outline": "#737686",
+                        "on-primary-fixed": "#00174b",
+                        "tertiary-fixed": "#ffdbcd",
+                        "primary": "#004ac6",
+                        "inverse-primary": "#b4c5ff",
+                        "on-error-container": "#93000a",
+                        "on-secondary-fixed": "#0b1c30",
+                        "secondary-fixed-dim": "#b7c8e1",
+                        "surface-container-highest": "#dae2fd",
+                        "surface-tint": "#0053db",
+                        "secondary": "#505f76",
+                        "on-surface-variant": "#434655",
+                        "on-background": "#131b2e",
+                        "on-primary-fixed-variant": "#003ea8",
+                        "tertiary-container": "#bc4800",
+                        "surface-container-high": "#e2e7ff",
+                        "secondary-container": "#d0e1fb",
+                        "on-tertiary": "#ffffff",
+                        "surface-variant": "#dae2fd",
+                        "primary-fixed": "#dbe1ff",
+                        "on-error": "#ffffff",
+                        "tertiary": "#943700",
+                        "on-surface": "#131b2e",
+                        "on-secondary": "#ffffff",
+                        "surface": "#faf8ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "sm": "12px",
+                        "base": "8px",
+                        "margin-desktop": "40px",
+                        "lg": "24px",
+                        "md": "16px",
+                        "gutter": "24px",
+                        "xs": "4px",
+                        "xl": "32px",
+                        "margin-mobile": "16px"
+                    },
+                    "fontFamily": {
+                        "headline-lg-mobile": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "body-md": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "label-md": ["Inter"],
+                        "headline-xl": ["Inter"],
+                        "body-sm": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-lg-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "700" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "500" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                        "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "headline-xl": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface h-screen flex flex-col overflow-hidden">
+<!-- TopAppBar (Retained for branding, navigation suppressed per task-focus rule) -->
+<header class="flex justify-between items-center w-full px-margin-desktop py-base bg-surface border-b border-outline-variant shrink-0 z-10">
+<div class="text-headline-sm font-headline-sm font-bold text-primary">V4H - ReNTAI</div>
+<div class="flex items-center gap-md">
+<button class="p-sm rounded-full text-on-surface-variant hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-primary-fixed overflow-hidden flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary-fixed" data-icon="person">person</span>
+</div>
+</div>
+</header>
+<!-- Main Canvas -->
+<main class="flex-1 overflow-y-auto p-margin-mobile md:p-margin-desktop bg-surface-bright relative">
+<div class="max-w-[1280px] mx-auto flex flex-col gap-xl relative z-10">
+<!-- Context Header & Actions -->
+<div class="flex flex-col gap-md">
+<button class="flex items-center gap-xs text-secondary hover:text-primary transition-colors w-max group">
+<span class="material-symbols-outlined text-[20px] group-hover:-translate-x-1 transition-transform">arrow_back</span>
+<span class="text-label-md font-label-md">Voltar ao Dashboard</span>
+</button>
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-md border-b border-outline-variant pb-md">
+<div class="flex flex-col gap-xs">
+<span class="text-label-md font-label-md text-secondary">Teleconsultoria #TC-2024-089</span>
+<div class="flex items-center gap-sm mt-xs">
+<h1 class="text-headline-lg font-headline-lg text-on-surface">João P. S.</h1>
+<!-- Status Badge -->
+<div class="px-sm py-[2px] rounded-full bg-primary-container text-on-primary-container flex items-center gap-xs border border-primary-fixed-dim">
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="text-label-sm font-label-sm">Concluída</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Two-Column Document Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-lg items-start">
+<!-- Left Column: Immutable Clinical Data -->
+<div class="lg:col-span-4 flex flex-col gap-md">
+<!-- Clinical Summary Accordion-style Card -->
+<div class="bg-surface-container-low border border-outline-variant rounded-xl overflow-hidden">
+<div class="px-md py-sm bg-surface-container border-b border-outline-variant flex items-center gap-sm">
+<span class="material-symbols-outlined text-secondary text-[20px]">assignment_ind</span>
+<h2 class="text-label-md font-label-md text-on-surface">Resumo Clínico</h2>
+</div>
+<div class="p-md flex flex-col gap-lg">
+<div>
+<h3 class="text-label-sm font-label-sm text-secondary uppercase tracking-wider mb-xs">História Clínica</h3>
+<div class="text-body-sm font-body-sm text-on-surface bg-surface-container-lowest p-sm rounded-lg border border-outline-variant border-opacity-40">
+                                    Paciente de 54 anos, sexo masculino, apresentando dispneia aos esforços moderados e dor torácica atípica intermitente há cerca de 2 semanas. Nega síncope. Refere hipertensão arterial sistêmica de longa data, em uso regular de Losartana 50mg/dia. Histórico familiar positivo para DAC prematura (pai).
+                                </div>
+</div>
+<div>
+<h3 class="text-label-sm font-label-sm text-secondary uppercase tracking-wider mb-xs">Hipótese Diagnóstica</h3>
+<div class="text-body-sm font-body-sm text-on-surface bg-surface-container-lowest p-sm rounded-lg border border-outline-variant border-opacity-40">
+                                    Doença Arterial Coronariana a esclarecer / HAS estágio I.
+                                </div>
+</div>
+</div>
+</div>
+<!-- Attachments -->
+<div class="bg-surface-container-low border border-outline-variant rounded-xl overflow-hidden">
+<div class="px-md py-sm bg-surface-container border-b border-outline-variant flex items-center gap-sm">
+<span class="material-symbols-outlined text-secondary text-[20px]">attach_file</span>
+<h2 class="text-label-md font-label-md text-on-surface">Arquivos Anexados</h2>
+</div>
+<div class="p-md flex flex-col gap-sm">
+<div class="flex items-center gap-sm p-sm rounded-lg bg-surface-container-lowest border border-outline-variant hover:border-primary-fixed transition-colors cursor-default">
+<div class="w-8 h-8 rounded bg-error-container text-on-error-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[18px]">picture_as_pdf</span>
+</div>
+<span class="text-body-sm font-body-sm text-on-surface flex-1 truncate">ECG_Repouso.pdf</span>
+<span class="material-symbols-outlined text-outline text-[18px]">visibility</span>
+</div>
+<div class="flex items-center gap-sm p-sm rounded-lg bg-surface-container-lowest border border-outline-variant hover:border-primary-fixed transition-colors cursor-default">
+<div class="w-8 h-8 rounded bg-primary-fixed text-on-primary-fixed flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[18px]">image</span>
+</div>
+<span class="text-body-sm font-body-sm text-on-surface flex-1 truncate">Labs_Sangue.png</span>
+<span class="material-symbols-outlined text-outline text-[18px]">visibility</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: The Opinion (Main Canvas) -->
+<div class="lg:col-span-8">
+<div class="bg-surface-container-lowest border border-primary-fixed rounded-xl shadow-[0_4px_6px_-1px_rgba(0,0,0,0.05),0_10px_15px_-3px_rgba(0,0,0,0.05)] overflow-hidden relative min-h-[500px] flex flex-col">
+<!-- Top Accent Line -->
+<div class="h-1 w-full bg-primary absolute top-0 left-0"></div>
+<!-- Document Header -->
+<div class="px-xl py-lg border-b border-outline-variant flex flex-col sm:flex-row sm:items-center justify-between gap-md bg-surface-container-lowest relative z-10 mt-xs">
+<div class="flex items-center gap-md">
+<div class="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center text-on-surface-variant border border-outline-variant shrink-0">
+<span class="material-symbols-outlined text-[24px]">clinical_notes</span>
+</div>
+<div>
+<h2 class="text-headline-sm font-headline-sm text-on-surface">Parecer Especializado</h2>
+<p class="text-body-sm font-body-sm text-secondary">Cardiologia Clínica</p>
+</div>
+</div>
+<div class="text-right">
+<div class="text-label-sm font-label-sm text-secondary uppercase tracking-wider mb-xs">Emitido por</div>
+<div class="text-body-md font-body-md font-medium text-on-surface">Dr. Carlos Mendes</div>
+<div class="text-label-sm font-label-sm text-secondary">CRM 84920-SP</div>
+</div>
+</div>
+<!-- Document Body -->
+<div class="p-xl flex-1 flex flex-col relative">
+<!-- Subtle Background Watermark -->
+<div class="absolute inset-0 flex items-center justify-center opacity-[0.03] pointer-events-none">
+<span class="material-symbols-outlined text-[240px]">health_and_safety</span>
+</div>
+<div class="relative z-10 flex-1">
+<div class="mb-lg">
+<span class="text-label-md font-label-md text-secondary bg-surface-container px-sm py-xs rounded-md">Data da Conclusão: 24/10/2024 às 16:45</span>
+</div>
+<p class="text-body-lg font-body-lg text-on-surface leading-loose whitespace-pre-wrap">Baseado nos exames apresentados e no quadro clínico relatado, observa-se uma melhora significativa após o ajuste medicamentoso. 
+
+Sugiro manter a dosagem atual de 50mg e realizar novo acompanhamento em 3 meses. Não há sinais de isquemia aguda no ECG analisado. A dor torácica relatada apresenta características atípicas e não sugere etiologia coronariana neste momento, considerando o exame físico e os exames complementares anexados.
+
+Oriento manter o controle rigoroso da pressão arterial e iniciar programa de reabilitação cardiopulmonar leve a moderada.</p>
+</div>
+<!-- Digital Signature Footer -->
+<div class="mt-xl pt-lg border-t border-outline-variant border-dashed flex justify-end relative z-10">
+<div class="flex flex-col items-end text-right">
+<div class="flex items-center gap-xs text-primary mb-xs">
+<span class="material-symbols-outlined text-[16px]">verified</span>
+<span class="text-label-md font-label-md">Assinatura Eletrônica Validada</span>
+</div>
+<span class="text-body-sm font-body-sm text-secondary">Hash: a8f9c2...7b3e</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Global Footer Actions -->
+<div class="flex flex-col sm:flex-row justify-end gap-md pt-lg pb-xl mt-auto">
+<button class="px-lg py-sm rounded-lg border border-outline text-on-surface text-label-md font-label-md hover:bg-surface-container-low transition-colors text-center focus:ring-2 focus:ring-primary focus:outline-none">
+                    Voltar ao Dashboard
+                </button>
+<button class="px-lg py-sm rounded-lg bg-primary text-on-primary text-label-md font-label-md hover:bg-on-primary-fixed-variant transition-colors flex items-center justify-center gap-sm shadow-sm focus:ring-2 focus:ring-offset-2 focus:ring-primary focus:outline-none">
+<span class="material-symbols-outlined text-[20px]">download</span>
+                    Baixar Parecer em PDF
+                </button>
+</div>
+</div>
+</main>
+</body></html>

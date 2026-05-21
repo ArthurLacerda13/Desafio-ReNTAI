@@ -1,0 +1,9 @@
+django>=4.2
+djangorestframework
+djangorestframework-simplejwt
+channels>=4.0.0
+channels-redis
+psycopg2-binary
+uvicorn
+python-dotenv
+django-cors-headers

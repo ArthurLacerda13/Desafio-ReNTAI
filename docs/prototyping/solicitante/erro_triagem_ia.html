@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Nova Teleconsultoria - V4H ReNTAI</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "outline": "#737686",
+                        "on-tertiary-fixed": "#360f00",
+                        "tertiary-fixed-dim": "#ffb596",
+                        "on-tertiary-container": "#ffede6",
+                        "on-secondary": "#ffffff",
+                        "outline-variant": "#c3c6d7",
+                        "tertiary-fixed": "#ffdbcd",
+                        "surface-container-highest": "#dae2fd",
+                        "on-tertiary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "on-tertiary-fixed-variant": "#7d2d00",
+                        "on-primary-fixed": "#00174b",
+                        "inverse-primary": "#b4c5ff",
+                        "on-surface-variant": "#434655",
+                        "surface-container-low": "#f2f3ff",
+                        "on-secondary-fixed-variant": "#38485d",
+                        "error-container": "#ffdad6",
+                        "primary-container": "#2563eb",
+                        "background": "#faf8ff",
+                        "secondary-fixed-dim": "#b7c8e1",
+                        "on-secondary-fixed": "#0b1c30",
+                        "surface-dim": "#d2d9f4",
+                        "secondary-fixed": "#d3e4fe",
+                        "on-error-container": "#93000a",
+                        "on-primary-fixed-variant": "#003ea8",
+                        "surface-bright": "#faf8ff",
+                        "primary-fixed": "#dbe1ff",
+                        "primary": "#004ac6",
+                        "surface": "#faf8ff",
+                        "surface-variant": "#dae2fd",
+                        "surface-tint": "#0053db",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary": "#943700",
+                        "surface-container-high": "#e2e7ff",
+                        "on-background": "#131b2e",
+                        "inverse-on-surface": "#eef0ff",
+                        "on-surface": "#131b2e",
+                        "on-error": "#ffffff",
+                        "tertiary-container": "#bc4800",
+                        "on-primary": "#ffffff",
+                        "surface-container": "#eaedff",
+                        "secondary": "#505f76",
+                        "secondary-container": "#d0e1fb",
+                        "on-secondary-container": "#54647a",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "inverse-surface": "#283044",
+                        "on-primary-container": "#eeefff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xs": "4px",
+                        "lg": "24px",
+                        "xl": "32px",
+                        "margin-mobile": "16px",
+                        "base": "8px",
+                        "md": "16px",
+                        "margin-desktop": "40px",
+                        "gutter": "24px",
+                        "sm": "12px"
+                    },
+                    "fontFamily": {
+                        "label-sm": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-xl": ["Inter"],
+                        "label-md": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "body-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "500" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "headline-xl": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "700" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                        "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .ai-pulse {
+            animation: pulse-border 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse-border {
+            0%, 100% { border-color: rgba(37, 99, 235, 0.2); }
+            50% { border-color: rgba(37, 99, 235, 1); }
+        }
+        .spin-slow {
+            animation: spin 3s linear infinite;
+        }
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md text-body-md min-h-screen flex">
+<!-- SideNavBar -->
+<nav class="bg-surface-container-lowest dark:bg-inverse-surface h-full w-64 fixed left-0 top-0 border-r border-outline-variant dark:border-outline shadow-sm flex flex-col py-lg px-md gap-md z-20 md:flex hidden">
+<div class="flex items-center gap-sm px-sm pb-md border-b border-outline-variant">
+<div class="w-10 h-10 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-headline-md text-headline-md font-bold overflow-hidden">
+<img alt="Foto de perfil do Solicitante" class="w-full h-full object-cover" data-alt="Professional headshot portrait of a medical provider wearing a white coat in a bright, modern clinical setting. Soft, natural lighting. High quality corporate style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDiZRz_0LUVfo3avzPoVVqFOYftRiB-ku7Emm9kIM54SMtoH7U6072mlJWmVLXaa8Thd7Us2Oqg-4QNFPO5MtZG_6ZdUxMU08ADW27z9XVHb1Af42cXg3LJnmO24GduewzKbYCTzX0yDc4Kb6J6SLKmtbd3TkZUrlp8mORUGZvkKcwWtvg1GIr3iv316Si_qjH6vFe6zwo_17D2WWq9tkwGukQ-g1RWnX0ipi81F1gdwzHA5zFXy09glhWBKUSiJyC2nNGwP1pX6dk"/>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface">Usuário APS</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Solicitante</p>
+</div>
+</div>
+<div class="flex-1 flex flex-col gap-base">
+<!-- Active Tab (Dashboard) -->
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-primary dark:text-primary-fixed-dim font-bold border-r-4 border-primary dark:border-primary-fixed-dim bg-primary-container/10 duration-200 ease-in-out font-body-md text-body-md font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+                Dashboard
+            </a>
+<!-- Inactive Tab (Nova Teleconsultoria) -->
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-secondary dark:text-secondary-fixed-dim hover:text-primary hover:bg-surface-container-low dark:hover:bg-surface-variant transition-colors duration-200 ease-in-out font-body-md text-body-md font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined">add_circle</span>
+                Nova Teleconsultoria
+            </a>
+</div>
+</nav>
+<!-- Main Content Wrapper -->
+<div class="flex-1 ml-0 md:ml-64 flex flex-col w-full min-h-screen">
+<!-- TopAppBar -->
+<header class="bg-surface dark:bg-background fixed top-0 right-0 w-full md:w-[calc(100%-16rem)] h-16 border-b border-outline-variant dark:border-outline flex justify-between items-center px-lg z-10 transition-all duration-150">
+<div class="flex items-center gap-md">
+<!-- Mobile menu button -->
+<button class="md:hidden text-on-surface-variant hover:bg-surface-container rounded-full p-xs transition-colors">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<span class="font-headline-sm text-headline-sm font-black text-primary">V4H - ReNTAI</span>
+</div>
+<div class="flex items-center gap-sm text-on-surface-variant">
+<button class="p-sm hover:bg-surface-container dark:hover:bg-surface-container-high rounded-full transition-all duration-150 relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<button class="p-sm hover:bg-surface-container dark:hover:bg-surface-container-high rounded-full transition-all duration-150">
+<span class="material-symbols-outlined">help</span>
+</button>
+<button class="p-sm hover:bg-surface-container dark:hover:bg-surface-container-high rounded-full transition-all duration-150">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<div class="ml-sm w-8 h-8 rounded-full overflow-hidden border border-outline-variant hidden md:block">
+<img alt="Avatar do solicitante" class="w-full h-full object-cover" data-alt="Professional headshot portrait of a medical provider wearing a white coat in a bright, modern clinical setting. Soft, natural lighting. High quality corporate style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDbZ6x80IDJA19UYRGq_0IilOvGnkJzFChVYyzld6nLtS4DFqGh6Exwb00lqL0I5XgNGEPsoW7-OW1D2nHhAwE7gyVCbnbAK0xVMTnpk1iKSmlN87khbAFSUWL0hCpff7fbkxXC-6X6lfpoHUui8J8y60F9Q_vUReAc9QqW9C3yPvvgwpJ6YakhgZprIvv70EqxoUH2vIwMnFTiPRpTl4Sul_py0EcHnIRDOTkDvj6vboGxvyXzwOmm-HAGVINLjV0Qagwass_zh-g"/>
+</div>
+</div>
+</header>
+<!-- Page Canvas -->
+<main class="flex-1 pt-24 pb-24 overflow-y-auto">
+<div class="max-w-6xl mx-auto space-y-lg px-md md:px-margin-desktop">
+<!-- Header -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-md mb-xl">
+<div>
+<h1 class="font-headline-lg text-headline-lg text-on-background">Nova Solicitação</h1>
+<p class="font-body-md text-body-md text-on-surface-variant mt-xs">Preencha os dados clínicos para solicitar apoio especializado.</p>
+</div>
+<div class="flex items-center gap-sm text-sm font-label-sm text-label-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-base">info</span>
+                        Campos com asterisco (*) são obrigatórios
+                    </div>
+</div>
+<!-- Bento Grid Layout -->
+<form class="grid grid-cols-1 lg:grid-cols-12 gap-lg pb-lg">
+<!-- Left Column (Patient & Context) -->
+<div class="lg:col-span-8 flex flex-col gap-lg">
+<!-- Patient Data Card -->
+<div class="bg-surface-container-lowest border border-outline-variant shadow-sm rounded-xl p-lg flex flex-col gap-md relative overflow-hidden">
+<div class="absolute top-0 left-0 w-1 h-full bg-primary"></div>
+<div class="flex justify-between items-start">
+<h2 class="font-headline-sm text-headline-sm flex items-center gap-sm text-on-background">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">person</span>
+                                Dados do Paciente
+                            </h2>
+<div class="flex items-center gap-xs px-sm py-xs bg-surface-container-low rounded-full border border-outline-variant">
+<span class="material-symbols-outlined text-sm text-primary">gpp_good</span>
+<span class="font-label-sm text-label-sm text-primary">Conformidade LGPD</span>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-md">
+<div class="md:col-span-2 flex flex-col gap-xs">
+<label class="font-label-sm text-label-sm text-on-surface-variant">Nome ou Iniciais *</label>
+<input class="w-full bg-surface border border-outline-variant rounded-lg px-md py-sm font-body-md text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all placeholder:text-outline" placeholder="Ex: João da Silva ou J.S." type="text"/>
+</div>
+<div class="flex flex-col gap-xs">
+<label class="font-label-sm text-label-sm text-on-surface-variant">Data de Nascimento *</label>
+<div class="relative">
+<input class="w-full bg-surface border border-outline-variant rounded-lg px-md py-sm font-body-md text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all appearance-none" type="date"/>
+<span class="material-symbols-outlined absolute right-sm top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none">calendar_month</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Clinical Context Card -->
+<div class="bg-surface-container-lowest border border-outline-variant shadow-sm rounded-xl p-lg flex flex-col gap-md relative overflow-hidden">
+<div class="absolute top-0 left-0 w-1 h-full bg-tertiary"></div>
+<h2 class="font-headline-sm text-headline-sm flex items-center gap-sm text-on-background">
+<span class="material-symbols-outlined text-tertiary" style="font-variation-settings: 'FILL' 1;">medical_information</span>
+                                Contexto Clínico
+                            </h2>
+<div class="flex flex-col gap-lg">
+<div class="flex flex-col gap-xs">
+<label class="font-label-sm text-label-sm text-on-surface-variant">História Clínica *</label>
+<textarea class="w-full bg-surface border border-outline-variant rounded-lg px-md py-sm font-body-md text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all resize-y placeholder:text-outline" placeholder="Descreva os sintomas, evolução e tratamentos prévios relevantes..." rows="6"></textarea>
+</div>
+<div class="flex flex-col gap-xs">
+<label class="font-label-sm text-label-sm text-on-surface-variant">Hipótese Diagnóstica (ou dúvida principal) *</label>
+<textarea class="w-full bg-surface border border-outline-variant rounded-lg px-md py-sm font-body-md text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all resize-y placeholder:text-outline" placeholder="Qual a sua principal suspeita ou dúvida para o especialista?" rows="4"></textarea>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column (Specialty & Attachments) -->
+<div class="lg:col-span-4 flex flex-col gap-lg">
+<!-- Specialty Card -->
+<div class="bg-surface-container-lowest border border-outline-variant shadow-sm rounded-xl p-lg flex flex-col gap-md">
+<h2 class="font-headline-sm text-headline-sm flex items-center gap-sm text-on-background">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">stethoscope</span>
+                                Especialidade
+                            </h2>
+<div class="flex flex-col gap-xs">
+<label class="font-label-sm text-label-sm text-on-surface-variant">Selecione o destino *</label>
+<div class="relative">
+<select class="w-full bg-surface border border-outline-variant rounded-lg px-md py-sm font-body-md text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all appearance-none cursor-pointer">
+<option disabled="" selected="" value="">Escolha uma opção...</option>
+<option value="cardiologia">Cardiologia</option>
+<option value="cirurgia_robotica">Cirurgia Robótica</option>
+<option value="odontologia">Odontologia</option>
+<option value="doencas_raras">Doenças Raras</option>
+<option value="oxigenoterapia">Oxigenoterapia</option>
+</select>
+<span class="material-symbols-outlined absolute right-sm top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none">expand_more</span>
+</div>
+</div>
+</div>
+<!-- Attachments Card -->
+<div class="bg-surface-container-lowest border border-outline-variant shadow-sm rounded-xl p-lg flex flex-col gap-md flex-1">
+<h2 class="font-headline-sm text-headline-sm flex items-center gap-sm text-on-background">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">attachment</span>
+                                Documentos
+                            </h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Anexe exames, laudos ou fotos relevantes.</p>
+<!-- Drag & Drop Zone -->
+<div class="border-2 border-dashed rounded-xl p-lg flex flex-col items-center justify-center text-center hover:bg-surface-container transition-colors cursor-pointer min-h-[160px] relative group border-error bg-error/5" id="dropzone">
+<span class="material-symbols-outlined text-4xl text-primary mb-sm group-hover:-translate-y-1 transition-transform">cloud_upload</span>
+<p class="font-label-md text-label-md text-on-surface">Arraste arquivos ou clique</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-xs">PDF, JPG, PNG (Max 10MB)</p>
+<input accept=".pdf,.jpg,.jpeg,.png" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" multiple="" type="file"/>
+</div>
+<!-- AI Analysis Visual Element (Simulated Active State) -->
+<div class="bg-error-container text-on-error-container border border-error/20 rounded-lg p-md flex flex-col gap-sm mt-sm">
+<div class="flex items-start gap-sm">
+<span class="material-symbols-outlined text-error">error</span>
+<div class="flex-1">
+<p class="font-label-md text-label-md font-bold">Documento Rejeitado pelo Sistema de Triagem Automática</p>
+<p class="font-body-sm text-body-sm mt-1">A qualidade da imagem enviada (Score de Confiança: 42%) está abaixo do limite aceitável. Certifique-se de que o documento não está borrado, escuro ou cortado.</p>
+</div>
+</div>
+<button class="mt-base w-full py-xs px-md border border-error text-error rounded-full font-label-sm text-label-sm hover:bg-error hover:text-on-error transition-colors flex items-center justify-center gap-xs" type="button">
+<span class="material-symbols-outlined text-[16px]">delete</span>
+        Remover Arquivo e Tentar Novamente
+    </button>
+</div>
+<!-- Example Uploaded File -->
+</div>
+</div>
+</form>
+</div>
+<!-- Sticky Footer -->
+<div class="fixed bottom-0 right-0 w-full md:w-[calc(100%-16rem)] bg-surface-container-lowest border-t border-outline-variant p-md z-10 flex items-center justify-end gap-md shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+<button class="px-lg py-sm rounded-full border border-outline-variant text-on-surface font-label-md text-label-md hover:bg-surface-container transition-colors" type="button">
+                        Cancelar
+                    </button>
+<button class="px-lg py-sm rounded-full bg-primary text-on-primary font-label-md text-label-md hover:bg-on-primary-fixed-variant transition-colors shadow-sm flex items-center gap-sm opacity-50 cursor-not-allowed" disabled="true" type="button">
+<span class="material-symbols-outlined text-[18px]">send</span>
+                        Solicitar Teleconsultoria
+                    </button>
+</div>
+</main>
+</div>
+<script>
+        // Simple script to toggle active state on dropzone purely for visual feedback
+        const dropzone = document.getElementById('dropzone');
+        dropzone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropzone.classList.add('border-primary', 'bg-surface-container-high');
+        });
+        dropzone.addEventListener('dragleave', () => {
+            dropzone.classList.remove('border-primary', 'bg-surface-container-high');
+        });
+        dropzone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropzone.classList.remove('border-primary', 'bg-surface-container-high');
+            // Logic would go here
+        });
+    </script>
+</body></html>
