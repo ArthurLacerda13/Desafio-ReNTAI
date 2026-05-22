@@ -101,6 +101,28 @@ class TeleconsultationDetailView(generics.RetrieveAPIView):
             )
         return Teleconsultation.objects.all()
 
+from django.http import HttpResponse
+from .services.pdf_generator import generate_teleconsultation_pdf
+
+class TeleconsultationPDFView(generics.RetrieveAPIView):
+    queryset = Teleconsultation.objects.all()
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request, *args, **kwargs):
+        instance = self.get_object()
+        
+        # Check permissions: only the solicitante or an especialista assigned can download
+        if request.user.role == 'SOLICITANTE' and instance.solicitante != request.user:
+            return Response({"detail": "Não autorizado."}, status=status.HTTP_403_FORBIDDEN)
+            
+        pdf_content = generate_teleconsultation_pdf(instance)
+        
+        filename = f"parecer_{str(instance.id)[:8]}.pdf"
+        response = HttpResponse(pdf_content, content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="{filename}"'
+        
+        return response
+
 class FeedbackCreateView(generics.CreateAPIView):
     serializer_class = FeedbackSerializer
     permission_classes = (permissions.IsAuthenticated,)

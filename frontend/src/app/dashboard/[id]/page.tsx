@@ -221,12 +221,12 @@ export default function TeleconsultationDetailPage() {
             <div className="relative pl-4 space-y-6 border-l-2 border-outline-variant ml-2">
               <div className="relative">
                 <div className="absolute -left-[23px] top-0 w-3.5 h-3.5 rounded-full bg-primary border-2 border-white"></div>
-                <p className="text-[10px] font-bold text-on-surface-variant">{new Date(data.created_at).toLocaleString()}</p>
+                <p className="text-[10px] font-bold text-on-surface-variant">{(new Date(data.created_at)).toLocaleString()}</p>
                 <p className="text-sm font-bold text-on-surface">Solicitação Aberta</p>
               </div>
               <div className="relative">
                 <div className="absolute -left-[23px] top-0 w-3.5 h-3.5 rounded-full bg-primary border-2 border-white"></div>
-                <p className="text-[10px] font-bold text-on-surface-variant">{(new Date(data.created_at).getTime() + 60000).toLocaleString}</p>
+                <p className="text-[10px] font-bold text-on-surface-variant">{new Date(new Date(data.created_at).getTime() + 60000).toLocaleString()}</p>
                 <p className="text-sm font-bold text-on-surface">Triagem Automática Concluída</p>
               </div>
               {isConcluida && (

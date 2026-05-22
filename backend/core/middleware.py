@@ -23,10 +23,12 @@ class JWTAuthMiddleware:
 
     async def __call__(self, scope, receive, send):
         close_old_connections()
-        
+
         # Get the token from query string
         query_string = parse_qs(scope["query_string"].decode())
         token = query_string.get("token", [None])[0]
+
+        print(f"WS Attempt: Token found: {bool(token)}")
 
         if token:
             try:
@@ -34,7 +36,9 @@ class JWTAuthMiddleware:
                 access_token = AccessToken(token)
                 user_id = access_token["user_id"]
                 scope["user"] = await get_user(user_id)
-            except Exception:
+                print(f"WS Auth Success: User {scope['user']}")
+            except Exception as e:
+                print(f"WS Auth Error: {str(e)}")
                 scope["user"] = AnonymousUser()
         else:
             scope["user"] = AnonymousUser()

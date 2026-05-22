@@ -14,6 +14,11 @@ def notify_teleconsultation_events(sender, instance, created, **kwargs):
     if created:
         # RF002: Notify all Specialists in the matching specialty
         specialists = User.objects.filter(role='ESPECIALISTA', specialty=instance.specialty)
+
+        # Fallback: if no specialist has the specific specialty set, notify all specialists
+        if not specialists.exists():
+            specialists = User.objects.filter(role='ESPECIALISTA')
+
         for specialist in specialists:
             group_name = f"user_{specialist.id}"
             async_to_sync(channel_layer.group_send)(

@@ -23,5 +23,5 @@ COPY . /app/
 # Expose port
 EXPOSE 8000
 
-# Start application using Uvicorn
-CMD ["uvicorn", "core.asgi:application", "--host", "0.0.0.0", "--port", "8000"]
+# Start application using Daphne
+CMD ["daphne", "-b", "0.0.0.0", "-p", "8000", "core.asgi:application"]

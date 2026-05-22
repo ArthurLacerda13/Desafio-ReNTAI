@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useEffect, useState, ReactNode, useCallback } from 'react';
 import { useAuth } from './AuthContext';
 import { Bell, X, Info, CheckCircle, AlertTriangle } from 'lucide-react';
 
@@ -22,38 +22,8 @@ const NotificationContext = createContext<NotificationContextType | undefined>(u
 export function NotificationProvider({ children }: { children: ReactNode }) {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const { user, token } = useAuth();
-  const [socket, setSocket] = useState<WebSocket | null>(null);
 
-  useEffect(() => {
-    if (user && token) {
-      // Connect to WebSocket
-      const wsUrl = `ws://localhost:8081/ws/teleconsultations/?token=${token}`;
-      const ws = new WebSocket(wsUrl);
-
-      ws.onopen = () => {
-        console.log('Connected to notification service');
-      };
-
-      ws.onmessage = (event) => {
-        const data = jsonParse(event.data);
-        if (data && data.message) {
-          addNotification(data.message, 'status_update');
-        }
-      };
-
-      ws.onclose = () => {
-        console.log('Disconnected from notification service');
-      };
-
-      setSocket(ws);
-
-      return () => {
-        ws.close();
-      };
-    }
-  }, [user, token]);
-
-  const addNotification = (message: string, type: 'status_update' | 'info' = 'info') => {
+  const addNotification = useCallback((message: string, type: 'status_update' | 'info' = 'info') => {
     const id = Math.random().toString(36).substring(7);
     const newNotification: Notification = {
       id,
@@ -63,23 +33,61 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
     };
     setNotifications((prev) => [newNotification, ...prev]);
 
-    // Auto-remove after 5 seconds
+    // Auto-remove after 8 seconds for better visibility
     setTimeout(() => {
-      removeNotification(id);
-    }, 5000);
-  };
+      setNotifications((prev) => prev.filter((n) => n.id !== id));
+    }, 8000);
+  }, []);
 
   const removeNotification = (id: string) => {
     setNotifications((prev) => prev.filter((n) => n.id !== id));
   };
 
-  const jsonParse = (str: string) => {
-    try {
-      return JSON.parse(str);
-    } catch (e) {
-      return null;
+  useEffect(() => {
+    if (user && token) {
+      // Build WebSocket URL
+      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      // Use the current hostname but port 8082 for the backend
+      const host = window.location.hostname + ':8082';
+      const wsUrl = `${protocol}//${host}/ws/teleconsultations/?token=${token}`;
+      
+      console.log('[NotificationService] Connecting to:', wsUrl);
+      const ws = new WebSocket(wsUrl);
+
+      ws.onopen = () => {
+        console.log('[NotificationService] Connected successfully');
+      };
+
+      ws.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          console.log('[NotificationService] Message received:', data);
+          if (data && data.message) {
+            addNotification(data.message, 'status_update');
+            
+            // Dispatch event to allow components to refresh data
+            console.log('[NotificationService] Dispatching refresh event');
+            window.dispatchEvent(new CustomEvent('notification-received', { detail: data }));
+          }
+        } catch (e) {
+          console.error('[NotificationService] Parse error:', e);
+        }
+      };
+
+      ws.onclose = (e) => {
+        console.log('[NotificationService] Disconnected:', e.code, e.reason);
+      };
+
+      ws.onerror = (e) => {
+        console.error('[NotificationService] Connection error:', e);
+      };
+
+      return () => {
+        console.log('[NotificationService] Cleaning up connection');
+        ws.close();
+      };
     }
-  };
+  }, [user, token, addNotification]);
 
   return (
     <NotificationContext.Provider value={{ notifications, addNotification, removeNotification }}>

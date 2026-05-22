@@ -32,6 +32,15 @@ export default function DashboardPage() {
 
   useEffect(() => {
     fetchTeleconsultations();
+
+    // Refresh when a notification is received
+    const handleNotification = () => {
+      console.log('Notification received, refreshing data...');
+      fetchTeleconsultations();
+    };
+
+    window.addEventListener('notification-received', handleNotification);
+    return () => window.removeEventListener('notification-received', handleNotification);
   }, [fetchTeleconsultations]);
 
   const getStatusBadge = (status: string) => {
