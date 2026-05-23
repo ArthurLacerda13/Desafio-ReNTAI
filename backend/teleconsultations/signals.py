@@ -10,6 +10,7 @@ User = get_user_model()
 @receiver(post_save, sender=Teleconsultation)
 def notify_teleconsultation_events(sender, instance, created, **kwargs):
     channel_layer = get_channel_layer()
+    print(f"Signal Triggered: Teleconsultation {instance.id}, Created={created}, Status={instance.status}")
     
     if created:
         # RF002: Notify all Specialists in the matching specialty
@@ -17,10 +18,12 @@ def notify_teleconsultation_events(sender, instance, created, **kwargs):
 
         # Fallback: if no specialist has the specific specialty set, notify all specialists
         if not specialists.exists():
+            print(f"No specialists found for {instance.specialty}, notifying all specialists")
             specialists = User.objects.filter(role='ESPECIALISTA')
 
         for specialist in specialists:
             group_name = f"user_{specialist.id}"
+            print(f"Sending 'new_case' notification to {group_name}")
             async_to_sync(channel_layer.group_send)(
                 group_name,
                 {
@@ -33,6 +36,7 @@ def notify_teleconsultation_events(sender, instance, created, **kwargs):
     else:
         # Notify the Solicitante about status changes (e.g., Parecer Emitido)
         group_name = f"user_{instance.solicitante.id}"
+        print(f"Sending 'status_change' notification to solicitante {group_name}")
         async_to_sync(channel_layer.group_send)(
             group_name,
             {
@@ -46,6 +50,7 @@ def notify_teleconsultation_events(sender, instance, created, **kwargs):
         # If an especialista was assigned, notify them too
         if instance.especialista:
             group_name = f"user_{instance.especialista.id}"
+            print(f"Sending 'status_change' notification to especialista {group_name}")
             async_to_sync(channel_layer.group_send)(
                 group_name,
                 {
