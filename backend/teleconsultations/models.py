@@ -135,3 +135,29 @@ class GlobalConfig(models.Model):
 
     def __str__(self):
         return f"Config (Threshold: {self.ai_threshold}, Provider: {self.ai_provider})"
+
+class AccessLog(models.Model):
+    """
+    LGPD Traceability: Records who accessed which teleconsultation and when.
+    """
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True
+    )
+    teleconsultation = models.ForeignKey(
+        Teleconsultation,
+        on_delete=models.CASCADE,
+        related_name='access_logs'
+    )
+    accessed_at = models.DateTimeField(auto_now_add=True)
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+    action = models.CharField(max_length=50, default='VIEW_DETAILS') # VIEW_DETAILS, DOWNLOAD_PDF, etc.
+
+    class Meta:
+        verbose_name = _('access log')
+        verbose_name_plural = _('access logs')
+        ordering = ['-accessed_at']
+
+    def __str__(self):
+        return f"{self.user} accessed {self.teleconsultation.id} at {self.accessed_at}"

@@ -1,45 +1,53 @@
 # Módulo de Teleconsultoria com Validação Inteligente (Projeto ReNTAI)
 
-Este repositório contém o desenvolvimento do **Módulo de Teleconsultoria** para a plataforma **V4H (Video for Health)**, integrante do ecossistema **ReNTAI**. O sistema foca na otimização do fluxo de segundas opiniões médicas utilizando Inteligência Artificial para triagem de documentos.
-
-## 📌 Status do Projeto: Fase de Concepção & Arquitetura (Dia 1)
-Atualmente, o projeto encontra-se com a sua **fundação arquitetural e engenharia de requisitos 100% concluída**, seguindo rigorosos padrões de qualidade e manutenibilidade.
+Este repositório contém o desenvolvimento do **Módulo de Teleconsultoria** para a plataforma **V4H (Video for Health)**, integrante do ecossistema **ReNTAI**. O sistema foi projetado para otimizar o fluxo de segunda opinião médica utilizando Inteligência Artificial para triagem automática de documentos.
 
 ---
 
-## 📂 Guia de Navegação para Auditores
+## 🤖 Etapa 4: Declaração de Uso de IA e Arquitetura
 
-Para facilitar a auditoria técnica e a transferência de tecnologia, a estrutura está organizada da seguinte forma:
+Conforme exigido pelo edital (Seção 2.4 e Etapa 4), declaramos o uso de Inteligência Artificial para a **Triagem Automática e Validação Inteligente** de anexos clínicos.
 
-### 1. Documentação de Requisitos (`/docs/requirements`)
-Aqui encontram-se as definições de escopo e as dores de negócio mapeadas:
-*   **Visão do Produto:** Propósito e stakeholders.
-*   **Elicitação:** Mapeamento do cenário atual e gargalos.
-*   **Definição de Requisitos:** Lista formal de RFs e RNFs (funcionais e não-funcionais).
+### Arquitetura de IA (Strategy Pattern)
+O sistema foi implementado utilizando o padrão de projeto **Strategy**, permitindo que o motor de IA seja agnóstico ao provedor. Isso garante escalabilidade e conformidade com diferentes cenários de infraestrutura.
 
-### 2. Registros de Decisão de Arquitetura (`/docs/adr`)
-Contém as justificativas técnicas, alternativas descartadas e trade-offs das tecnologias escolhidas:
-*   `ADR-001`: Escolha da Stack (Next.js, Django, PostgreSQL, Docker).
-*   `ADR-002`: Estratégia de Persistência e Auditoria de IA.
-*   `ADR-003`: Comunicação em Tempo Real via WebSockets.
-*   `ADR-004`: Autenticação JWT e Controle de Acesso (RBAC).
-*   `ADR-005`: Desacoplamento do Motor de IA (Strategy Pattern).
+#### Motores Disponíveis:
+1.  **LocalContentAIEngine (Padrão):** Um motor de processamento de linguagem natural (NLP) que roda localmente usando a biblioteca `PyMuPDF`. Ele extrai o texto dos documentos PDF e analisa a presença de marcadores clínicos (como CID, Diagnóstico, CPF do paciente).
+    *   *Vantagem:* Baixo custo e total privacidade de dados (Conformidade LGPD).
+2.  **OpenAIEngine (Pronto para Produção):** Uma estratégia que integra o sistema ao modelo **GPT-4o** da OpenAI para uma análise semântica profunda.
+3.  **MockAIEngine:** Utilizado para testes e homologação de fluxos sem consumo de recursos.
 
-### 3. Modelagem Técnica - C4 Model (`/docs/architecture`)
-Diagramas estruturados utilizando PlantUML (Diagram-as-Code):
-*   `1-contexto.puml`: Visão de alto nível e sistemas externos.
-*   `2-containers.puml`: Divisão dos containers Docker e fluxos de dados.
-*   `mdr.puml`: Modelo Lógico / Relacional do Banco de Dados.
-
-### 4. Gestão de Engenharia (`/docs/management`)
-*   **Relatório Diário:** Registro das atividades executadas, objetivos de engenharia e status de progresso diário.
+### Governança e Auditabilidade (RNF005)
+O administrador do sistema possui controle total sobre a IA através do **Dashboard de Auditoria**, onde pode:
+*   Ajustar o **Threshold de Confiança** em tempo real.
+*   Alternar entre Provedores de IA sem downtime.
+*   Visualizar logs detalhados de cada decisão tomada pela IA (Score, Provedor e Timestamp).
 
 ---
 
-## 🛠️ Próximos Passos (Dia 2)
-- [ ] Implementação da infraestrutura Docker Compose.
-- [ ] Inicialização do Backend (Django) com implementação dos Models (MDR).
-- [ ] Inicialização do Frontend (Next.js).
+## 🛡️ Segurança e Rastreabilidade (LGPD)
+
+O sistema implementa rigorosos controles de acesso e rastreabilidade:
+*   **RBAC (Role-Based Access Control):** Diferenciação rígida entre Solicitante, Especialista e Admin.
+*   **AccessLogs (Novo):** Todas as visualizações de dados sensíveis e downloads de pareceres são registrados em um log de auditoria imutável, identificando o usuário, o IP e o timestamp da ação.
+
+---
+
+## 🚀 Como Executar
+
+### Pré-requisitos
+- Docker e Docker Compose instalados.
+
+### Passos
+1.  Clone o repositório.
+2.  Configure o arquivo `.env` (use o `.env.example` como base).
+3.  Execute o comando:
+    ```bash
+    docker-compose up --build
+    ```
+4.  Acesse:
+    - **Frontend:** `http://localhost:3000`
+    - **API (Backend):** `http://localhost:8082`
 
 ---
 **Desenvolvedor:** Arthur Felipe Almeida Lacerda  

@@ -164,11 +164,14 @@ class TeleconsultationListCreateView(generics.ListCreateAPIView):
             
         return Response(TeleconsultationSerializer(teleconsultation).data, status=status.HTTP_201_CREATED)
 
+from .models import Teleconsultation, Attachment, Feedback, StatusHistory, GlobalConfig, AccessLog
+
 class TeleconsultationDetailView(generics.RetrieveAPIView):
     serializer_class = TeleconsultationSerializer
     permission_classes = (permissions.IsAuthenticated,)
 
     def get_queryset(self):
+        # ... (same as before)
         user = self.request.user
         if user.is_staff or user.is_superuser:
             return Teleconsultation.objects.all()
@@ -184,6 +187,19 @@ class TeleconsultationDetailView(generics.RetrieveAPIView):
                 Q(especialista__isnull=True, status=Teleconsultation.Status.PENDENTE)
             )
         return Teleconsultation.objects.none()
+
+    def get(self, request, *args, **kwargs):
+        response = super().get(request, *args, **kwargs)
+        if response.status_code == 200:
+            # LGPD: Log access
+            instance = self.get_object()
+            AccessLog.objects.create(
+                user=request.user,
+                teleconsultation=instance,
+                ip_address=request.META.get('REMOTE_ADDR'),
+                action='VIEW_DETAILS'
+            )
+        return response
 
 from django.http import HttpResponse
 from .services.pdf_generator import generate_teleconsultation_pdf
@@ -201,6 +217,14 @@ class TeleconsultationPDFView(generics.RetrieveAPIView):
                 return Response({"detail": "Não autorizado."}, status=status.HTTP_403_FORBIDDEN)
             
         pdf_content = generate_teleconsultation_pdf(instance)
+        
+        # LGPD: Log PDF download
+        AccessLog.objects.create(
+            user=request.user,
+            teleconsultation=instance,
+            ip_address=request.META.get('REMOTE_ADDR'),
+            action='DOWNLOAD_PDF'
+        )
         
         filename = f"parecer_{str(instance.id)[:8]}.pdf"
         response = HttpResponse(pdf_content, content_type='application/pdf')
