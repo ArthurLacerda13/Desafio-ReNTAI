@@ -12,12 +12,14 @@ import {
   ShieldAlert,
   Edit3,
   Brain,
-  MessageSquare
+  MessageSquare,
+  Download
 } from 'lucide-react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import api from '@/lib/api';
 import { useAuth } from '@/contexts/AuthContext';
+import { useNotifications } from '@/contexts/NotificationContext';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -56,7 +58,9 @@ export default function TeleconsultationDetailPage() {
   const [loading, setLoading] = useState(true);
   const [feedback, setFeedback] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [downloading, setDownloading] = useState(false);
   const { user } = useAuth();
+  const { addNotification } = useNotifications();
   const router = useRouter();
 
   const fetchData = async () => {
@@ -80,11 +84,35 @@ export default function TeleconsultationDetailPage() {
     setSubmitting(true);
     try {
       await api.post(`/teleconsultations/${id}/feedback/`, { content: feedback });
+      addNotification('Parecer registrado com sucesso! O caso foi encerrado.', 'status_update');
       fetchData();
     } catch (error) {
       console.error('Failed to submit feedback', error);
+      addNotification('Falha ao registrar parecer. Tente novamente.', 'info');
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const handleDownloadPDF = async () => {
+    if (!id) return;
+    setDownloading(true);
+    try {
+      const response = await api.get(`/teleconsultations/${id}/pdf/`, {
+        responseType: 'blob'
+      });
+      
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `parecer_${id.toString().slice(0, 8)}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      console.error('Failed to download PDF', error);
+    } finally {
+      setDownloading(false);
     }
   };
 
@@ -258,11 +286,20 @@ export default function TeleconsultationDetailPage() {
                   <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-xs font-bold">
                     {data.feedback?.specialist_name.split(' ').map(n => n[0]).join('')}
                   </div>
-                  <div className="text-xs">
+                  <div className="text-xs flex-1">
                     <p className="font-bold text-on-surface">{data.feedback?.specialist_name}</p>
                     <p className="text-on-surface-variant">Médico Especialista</p>
                   </div>
                 </div>
+
+                <button
+                  onClick={handleDownloadPDF}
+                  disabled={downloading}
+                  className="w-full mt-4 bg-surface-container-high text-primary border border-primary/20 font-bold py-3 rounded-lg hover:bg-primary/5 transition-all flex items-center justify-center gap-2 disabled:opacity-50 shadow-sm"
+                >
+                  <Download className="w-5 h-5" />
+                  {downloading ? 'Gerando PDF...' : 'Baixar Parecer em PDF'}
+                </button>
               </div>
             ) : isSpecialist ? (
               <div className="flex flex-col gap-4">

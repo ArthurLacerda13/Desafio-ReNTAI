@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useEffect, useState, useCallback, useRef } from 'react';
-import { Plus, Search, Eye, ChevronLeft, ChevronRight, Filter } from 'lucide-react';
+import React, { useEffect, useState, useCallback, useRef, Suspense } from 'react';
+import { Plus, Search, Eye, ChevronLeft, ChevronRight, Filter, XCircle } from 'lucide-react';
 import Link from 'next/link';
 import api from '@/lib/api';
 import { useAuth } from '@/contexts/AuthContext';
+import { useSearchParams, useRouter } from 'next/navigation';
 
 interface Teleconsultation {
   id: string;
@@ -14,27 +15,59 @@ interface Teleconsultation {
   status: string;
 }
 
-export default function DashboardPage() {
+const TableSkeleton = () => (
+  <>
+    {[...Array(5)].map((_, i) => (
+      <tr key={i} className="animate-pulse">
+        <td className="px-6 py-4"><div className="h-4 bg-surface-container-high rounded w-16"></div></td>
+        <td className="px-6 py-4">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-full bg-surface-container-high"></div>
+            <div className="h-4 bg-surface-container-high rounded w-32"></div>
+          </div>
+        </td>
+        <td className="px-6 py-4"><div className="h-4 bg-surface-container-high rounded w-24"></div></td>
+        <td className="px-6 py-4"><div className="h-4 bg-surface-container-high rounded w-20"></div></td>
+        <td className="px-6 py-4"><div className="h-6 bg-surface-container-high rounded-full w-20"></div></td>
+        <td className="px-6 py-4 text-right"><div className="h-8 w-8 bg-surface-container-high rounded-full ml-auto"></div></td>
+      </tr>
+    ))}
+  </>
+);
+
+function DashboardContent() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  
   const [data, setData] = useState<Teleconsultation[]>([]);
   const [loading, setLoading] = useState(true);
-  const [statusFilter, setStatusFilter] = useState('');
-  const [periodFilter, setPeriodFilter] = useState('7');
-  const [searchQuery, setSearchQuery] = useState('');
+  
+  // Initialize state from URL params or defaults
+  const [statusFilter, setStatusFilter] = useState(searchParams.get('status') || '');
+  const [periodFilter, setPeriodFilter] = useState(searchParams.get('period') || '7');
+  const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
+  
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const { user, token } = useAuth();
-  
   const isInitialMount = useRef(true);
 
-  // Handle automatic updates with debounce for search but immediate for others
+  // Sync state to URL
   useEffect(() => {
-    // We declare fetchTeleconsultations INSIDE the effect so it has access to fresh state
-    // without needing useCallback.
+    const params = new URLSearchParams();
+    if (statusFilter) params.set('status', statusFilter);
+    if (periodFilter !== '7') params.set('period', periodFilter);
+    if (searchQuery) params.set('q', searchQuery);
+    
+    const query = params.toString();
+    const newUrl = query ? `/dashboard?${query}` : '/dashboard';
+    window.history.replaceState({ ...window.history.state, as: newUrl, url: newUrl }, '', newUrl);
+  }, [statusFilter, periodFilter, searchQuery]);
+
+  useEffect(() => {
     const fetchTeleconsultations = async () => {
       if (!token) return;
       
       setLoading(true);
-      console.log('[Dashboard] Fetching data...', { statusFilter, periodFilter, searchQuery });
-
       try {
         const params: any = {};
         if (statusFilter) params.status = statusFilter;
@@ -58,7 +91,6 @@ export default function DashboardPage() {
 
         const response = await api.get('/teleconsultations/', { params });
         setData(response.data);
-        console.log('[Dashboard] Success:', response.data.length, 'items');
       } catch (error) {
         console.error('[Dashboard] API Error:', error);
       } finally {
@@ -66,11 +98,7 @@ export default function DashboardPage() {
       }
     };
 
-    // 0ms delay for dropdowns (status/period/refreshTrigger change)
-    // 400ms delay if it's a search query change
-    // Using a ref to prevent delay on first mount
     const delay = isInitialMount.current ? 0 : (searchQuery ? 400 : 0);
-    
     const timer = setTimeout(() => {
       fetchTeleconsultations();
       isInitialMount.current = false;
@@ -79,13 +107,8 @@ export default function DashboardPage() {
     return () => clearTimeout(timer);
   }, [statusFilter, periodFilter, searchQuery, token, refreshTrigger]);
 
-  // Listen for WebSocket notifications
-
   useEffect(() => {
-    const handleNotification = () => {
-      console.log('[Dashboard] Notification received, refreshing list...');
-      setRefreshTrigger(prev => prev + 1);
-    };
+    const handleNotification = () => setRefreshTrigger(prev => prev + 1);
     window.addEventListener('notification-received', handleNotification);
     return () => window.removeEventListener('notification-received', handleNotification);
   }, []);
@@ -100,19 +123,10 @@ export default function DashboardPage() {
     return badges[status] || <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-surface-variant text-on-surface-variant">{status}</span>;
   };
 
-  // Explicit handlers for debugging
-  const handleStatusChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    console.log('[Dashboard] Status changing to:', e.target.value);
-    setStatusFilter(e.target.value);
-  };
-
-  const handlePeriodChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    console.log('[Dashboard] Period changing to:', e.target.value);
-    setPeriodFilter(e.target.value);
-  };
-
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(e.target.value);
+  const clearFilters = () => {
+    setStatusFilter('');
+    setPeriodFilter('7');
+    setSearchQuery('');
   };
 
   return (
@@ -134,9 +148,14 @@ export default function DashboardPage() {
         <div className="p-6 border-b border-outline-variant flex flex-col gap-4 bg-surface-container-lowest">
           <div className="flex justify-between items-center">
             <h2 className="text-xl font-semibold text-on-surface">Teleconsultorias Recentes</h2>
-            <div className="flex items-center gap-2 text-primary font-semibold text-sm">
-              <Filter className="w-5 h-5" /> Filtros
-            </div>
+            {(statusFilter || searchQuery || periodFilter !== '7') && (
+              <button 
+                onClick={clearFilters}
+                className="text-error font-bold text-xs flex items-center gap-1 hover:underline"
+              >
+                <XCircle className="w-3 h-3" /> Limpar Filtros
+              </button>
+            )}
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -144,7 +163,7 @@ export default function DashboardPage() {
               <label className="text-xs font-medium text-on-surface-variant ml-1">Período</label>
               <select 
                 value={periodFilter} 
-                onChange={handlePeriodChange} 
+                onChange={(e) => setPeriodFilter(e.target.value)} 
                 className="w-full bg-surface-container-low border border-outline-variant text-on-surface text-sm rounded-lg px-3 py-2.5 focus:ring-2 focus:ring-primary/20 outline-none transition-all"
               >
                 <option value="7">Últimos 7 dias</option>
@@ -157,7 +176,7 @@ export default function DashboardPage() {
               <label className="text-xs font-medium text-on-surface-variant ml-1">Status</label>
               <select 
                 value={statusFilter} 
-                onChange={handleStatusChange} 
+                onChange={(e) => setStatusFilter(e.target.value)} 
                 className="w-full bg-surface-container-low border border-outline-variant text-on-surface text-sm rounded-lg px-3 py-2.5 focus:ring-2 focus:ring-primary/20 outline-none transition-all"
               >
                 <option value="">Todos os Status</option>
@@ -175,7 +194,7 @@ export default function DashboardPage() {
                   type="text" 
                   placeholder="Digite o nome ou ID..." 
                   value={searchQuery} 
-                  onChange={handleSearchChange} 
+                  onChange={(e) => setSearchQuery(e.target.value)} 
                   className="w-full bg-surface-container-low border border-outline-variant text-on-surface text-sm rounded-lg pl-10 pr-3 py-2.5 focus:ring-2 focus:ring-primary/20 outline-none transition-all" 
                 />
               </div>
@@ -185,15 +204,6 @@ export default function DashboardPage() {
 
         {/* Table Area */}
         <div className="overflow-x-auto relative flex-1">
-          {loading && (
-            <div className="absolute inset-0 bg-surface/60 z-20 flex items-center justify-center backdrop-blur-[2px] transition-all">
-              <div className="flex flex-col items-center gap-2">
-                <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-                <span className="text-sm font-bold text-primary">Sincronizando...</span>
-              </div>
-            </div>
-          )}
-          
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="border-b border-outline-variant bg-surface-container-lowest">
@@ -206,13 +216,21 @@ export default function DashboardPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-outline-variant">
-              {data.length === 0 && !loading ? (
+              {loading ? (
+                <TableSkeleton />
+              ) : data.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="px-6 py-20 text-center">
                     <div className="flex flex-col items-center gap-2 text-on-surface-variant">
                       <Search className="w-10 h-10 opacity-20" />
                       <p className="text-lg font-medium">Nenhum registro encontrado</p>
                       <p className="text-sm opacity-70">Tente ajustar os filtros ou criar uma nova teleconsultoria.</p>
+                      <button 
+                        onClick={clearFilters}
+                        className="mt-4 text-primary font-bold text-sm hover:underline"
+                      >
+                        Limpar todos os filtros
+                      </button>
                     </div>
                   </td>
                 </tr>
@@ -254,5 +272,13 @@ export default function DashboardPage() {
         </div>
       </div>
     </>
+  );
+}
+
+export default function DashboardPage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center h-full"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div></div>}>
+      <DashboardContent />
+    </Suspense>
   );
 }
