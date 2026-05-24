@@ -108,10 +108,31 @@ class LocalContentAIEngine(BaseAIEngine):
             'timestamp': timezone.now()
         }
 
+class OpenAIEngine(BaseAIEngine):
+    """
+    Strategy for using external LLM (OpenAI) for clinical document validation.
+    Demonstrates extensibility (Strategy Pattern).
+    Note: Requires 'openai' library and OPENAI_API_KEY.
+    """
+    def validate_document(self, file_obj) -> dict:
+        # 1. Use LocalContentAIEngine's extraction logic (Omitted for brevity)
+        # 2. Send text to OpenAI API
+        # 3. Parse JSON response
+        
+        # Placeholder implementation for demonstration
+        return {
+            'score': 0.95,
+            'provider': 'OpenAI GPT-4o',
+            'threshold': float(getattr(settings, 'AI_THRESHOLD', 0.6)),
+            'timestamp': timezone.now()
+        }
+
 class AIEngineFactory:
     @staticmethod
     def get_engine() -> BaseAIEngine:
-        provider = getattr(settings, 'AI_PROVIDER', 'MOCK').upper()
+        provider = getattr(settings, 'AI_PROVIDER', 'REAL').upper()
+        if provider == 'OPENAI':
+            return OpenAIEngine()
         if provider == 'REAL':
             return LocalContentAIEngine()
         return MockAIEngine()
