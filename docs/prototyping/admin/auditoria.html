@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+
+<html class="light" lang="pt-br"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>V4H - ReNTAI | Dashboard de Auditoria e Gestão</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "primary": "#004ac6",
+                    "error": "#ba1a1a",
+                    "tertiary-container": "#bc4800",
+                    "surface-container": "#eaedff",
+                    "secondary-fixed-dim": "#b7c8e1",
+                    "primary-fixed-dim": "#b4c5ff",
+                    "primary-container": "#2563eb",
+                    "inverse-on-surface": "#eef0ff",
+                    "on-secondary-fixed-variant": "#38485d",
+                    "on-background": "#131b2e",
+                    "surface-container-highest": "#dae2fd",
+                    "surface-bright": "#faf8ff",
+                    "tertiary-fixed": "#ffdbcd",
+                    "on-surface": "#131b2e",
+                    "inverse-surface": "#283044",
+                    "on-secondary": "#ffffff",
+                    "surface": "#faf8ff",
+                    "surface-container-lowest": "#ffffff",
+                    "secondary": "#505f76",
+                    "surface-tint": "#0053db",
+                    "secondary-fixed": "#d3e4fe",
+                    "on-tertiary-container": "#ffede6",
+                    "on-primary-container": "#eeefff",
+                    "on-tertiary-fixed-variant": "#7d2d00",
+                    "on-surface-variant": "#434655",
+                    "surface-dim": "#d2d9f4",
+                    "on-error-container": "#93000a",
+                    "tertiary-fixed-dim": "#ffb596",
+                    "outline": "#737686",
+                    "on-primary": "#ffffff",
+                    "tertiary": "#943700",
+                    "secondary-container": "#d0e1fb",
+                    "surface-container-low": "#f2f3ff",
+                    "on-primary-fixed": "#00174b",
+                    "outline-variant": "#c3c6d7",
+                    "background": "#faf8ff",
+                    "on-tertiary-fixed": "#360f00",
+                    "inverse-primary": "#b4c5ff",
+                    "on-secondary-container": "#54647a",
+                    "surface-container-high": "#e2e7ff",
+                    "on-error": "#ffffff",
+                    "error-container": "#ffdad6",
+                    "on-primary-fixed-variant": "#003ea8",
+                    "primary-fixed": "#dbe1ff",
+                    "surface-variant": "#dae2fd",
+                    "on-tertiary": "#ffffff",
+                    "on-secondary-fixed": "#0b1c30"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "margin-mobile": "16px",
+                    "margin-desktop": "40px",
+                    "gutter": "24px",
+                    "sm": "12px",
+                    "xl": "32px",
+                    "lg": "24px",
+                    "base": "8px",
+                    "xs": "4px",
+                    "md": "16px"
+            },
+            "fontFamily": {
+                    "headline-md": ["Inter"],
+                    "body-md": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "label-md": ["Inter"],
+                    "body-sm": ["Inter"],
+                    "headline-xl": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "headline-sm": ["Inter"]
+            },
+            "fontSize": {
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "headline-xl": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #c3c6d7; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #737686; }
+        .glass-card { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(8px); }
+        .bento-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 24px; }
+    </style>
+</head>
+<body class="bg-surface font-body-md text-on-surface overflow-x-hidden">
+<!-- SideNavBar (Authority: JSON) -->
+<aside class="flex flex-col h-screen fixed left-0 top-0 py-lg px-md bg-surface-container-lowest dark:bg-inverse-surface border-r border-outline-variant dark:border-outline docked left-0 h-full w-72 z-50">
+<div class="mb-xl flex items-center gap-md">
+<div class="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-white">
+<span class="material-symbols-outlined" data-icon="clinical_notes">clinical_notes</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed">ReNTAI Admin</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant opacity-70">Clinical AI Intelligence</span>
+</div>
+</div>
+<nav class="flex-grow space-y-2">
+<!-- Active Tab: Dashboard de Auditoria -->
+<a class="flex items-center gap-md px-md py-sm rounded-xl transition-colors text-primary dark:text-primary-fixed font-bold border-r-4 border-primary hover:bg-surface-container-low dark:hover:bg-surface-variant scale-95 duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard_customize">dashboard_customize</span>
+<span class="font-label-md text-label-md">Dashboard de Auditoria</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm rounded-xl transition-colors text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-primary-fixed hover:bg-surface-container-low dark:hover:bg-surface-variant scale-95 duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="settings_input_component">settings_input_component</span>
+<span class="font-label-md text-label-md">Configurações de IA</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm rounded-xl transition-colors text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-primary-fixed hover:bg-surface-container-low dark:hover:bg-surface-variant scale-95 duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span class="font-label-md text-label-md">Gestão de Usuários</span>
+</a>
+</nav>
+<div class="mt-auto border-t border-outline-variant pt-lg">
+<a class="flex items-center gap-md px-md py-sm rounded-xl transition-colors text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-primary-fixed hover:bg-surface-container-low dark:hover:bg-surface-variant scale-95 duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span class="font-label-md text-label-md">Sair</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-72 min-h-screen">
+<!-- TopAppBar (Authority: JSON) -->
+<header class="flex justify-between items-center h-16 px-lg bg-surface/80 backdrop-blur-md sticky top-0 z-40 border-b border-outline-variant dark:border-outline opacity-80 transition-opacity">
+<h1 class="font-headline-sm text-headline-sm font-black text-primary dark:text-primary-fixed">Dashboard de Auditoria e Gestão</h1>
+<div class="flex items-center gap-lg">
+<div class="flex items-center gap-sm">
+<button class="w-10 h-10 flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="help_outline">help_outline</span>
+</button>
+</div>
+<div class="flex items-center gap-md pl-lg border-l border-outline-variant">
+<div class="flex flex-col text-right">
+<span class="font-label-md text-label-md font-bold">Admin</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Perfil: Admin</span>
+</div>
+<img alt="Admin Avatar" class="w-10 h-10 rounded-full object-cover border-2 border-primary-container shadow-sm" data-alt="A professional headshot of a mature executive male with short grey hair and a confident expression. He is wearing a sharp, navy blue tailored suit and a crisp white shirt, photographed against a minimalist corporate office backdrop with soft bokeh lighting and a cool, high-end professional aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDaPA-RlNRMLdxmNiH7dleiIPFG1xYNFx7I9OUnkX_rOpqtKE4IdAbezjDNTYLaRKsVKoJFPOqsTPO49FI19SCg1lgfKVLQJa9sKYU97WhB_l7B2OR182gRMK63Ry9FSiKqOhKsoZQ-NEPkRWYCPYlDPbLu15azx1l-qAkprkZsUOVZdXK6yVMjrKv8tALRKXTNvLFLojAiMVPbwz_7B3TecqZX8k3A-JqpfAhVVk6z4CZsv4wJxLSeEiz8xP05LZ7QFf3prT7O_kY"/>
+</div>
+</div>
+</header>
+<!-- Dashboard Canvas -->
+<div class="p-lg space-y-lg">
+<!-- KPI Row -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-lg">
+<!-- KPI 1 -->
+<div class="bg-surface-container-lowest p-lg rounded-xl border border-outline-variant shadow-sm hover:shadow-md transition-shadow">
+<div class="flex justify-between items-start mb-md">
+<div class="w-10 h-10 rounded-lg bg-error-container text-on-error-container flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="error_outline">error_outline</span>
+</div>
+<span class="text-error font-bold flex items-center gap-xs text-label-sm">
+<span class="material-symbols-outlined !text-sm" data-icon="trending_up">trending_up</span> +2.1%
+                        </span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Taxa de Rejeição de IA</span>
+<h2 class="font-headline-lg text-headline-lg mt-xs">12.5%</h2>
+<div class="mt-md h-1.5 w-full bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-error rounded-full" style="width: 12.5%"></div>
+</div>
+</div>
+<!-- KPI 2 -->
+<div class="bg-surface-container-lowest p-lg rounded-xl border border-outline-variant shadow-sm hover:shadow-md transition-shadow">
+<div class="flex justify-between items-start mb-md">
+<div class="w-10 h-10 rounded-lg bg-primary-container text-on-primary-container flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="timer">timer</span>
+</div>
+<span class="text-emerald-600 font-bold flex items-center gap-xs text-label-sm">
+<span class="material-symbols-outlined !text-sm" data-icon="trending_down">trending_down</span> -12m
+                        </span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Tempo Médio Resposta (SLA)</span>
+<h2 class="font-headline-lg text-headline-lg mt-xs">4h 30m</h2>
+<div class="mt-md flex gap-1">
+<div class="h-6 w-full bg-emerald-100 rounded-sm"></div>
+<div class="h-6 w-full bg-emerald-100 rounded-sm"></div>
+<div class="h-6 w-full bg-emerald-200 rounded-sm"></div>
+<div class="h-6 w-full bg-emerald-300 rounded-sm"></div>
+<div class="h-6 w-full bg-emerald-400 rounded-sm"></div>
+</div>
+</div>
+<!-- KPI 3 -->
+<div class="bg-surface-container-lowest p-lg rounded-xl border border-outline-variant shadow-sm hover:shadow-md transition-shadow">
+<div class="flex justify-between items-start mb-md">
+<div class="w-10 h-10 rounded-lg bg-tertiary-fixed text-on-tertiary-fixed flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="pending_actions">pending_actions</span>
+</div>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Consultorias Pendentes</span>
+<h2 class="font-headline-lg text-headline-lg mt-xs">45</h2>
+<p class="text-label-sm text-on-surface-variant mt-sm">23 aguardando triagem</p>
+</div>
+<!-- KPI 4 -->
+<div class="bg-surface-container-lowest p-lg rounded-xl border border-outline-variant shadow-sm hover:shadow-md transition-shadow">
+<div class="flex justify-between items-start mb-md">
+<div class="w-10 h-10 rounded-lg bg-secondary-container text-on-secondary-container flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="clinical_notes">clinical_notes</span>
+</div>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Especialistas Ativos</span>
+<h2 class="font-headline-lg text-headline-lg mt-xs">28</h2>
+<p class="text-label-sm text-on-surface-variant mt-sm">12 on-line agora</p>
+</div>
+</div>
+<!-- Middle Row: Charts & Control -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-lg">
+<!-- Demand Chart -->
+<div class="lg:col-span-2 bg-surface-container-lowest p-lg rounded-xl border border-outline-variant shadow-sm">
+<div class="flex justify-between items-center mb-xl">
+<h3 class="font-headline-sm text-headline-sm">Demandas por Especialidade</h3>
+<button class="text-primary font-bold text-label-md flex items-center gap-xs">
+                            Exportar <span class="material-symbols-outlined !text-lg" data-icon="download">download</span>
+</button>
+</div>
+<div class="space-y-md">
+<!-- Chart Bar 1 -->
+<div class="space-y-xs">
+<div class="flex justify-between text-label-md">
+<span class="text-on-surface">Cardiologia</span>
+<span class="font-bold">124 chamados</span>
+</div>
+<div class="h-8 w-full bg-surface-container rounded-lg overflow-hidden flex">
+<div class="h-full bg-primary" style="width: 85%"></div>
+</div>
+</div>
+<!-- Chart Bar 2 -->
+<div class="space-y-xs">
+<div class="flex justify-between text-label-md">
+<span class="text-on-surface">Odontologia</span>
+<span class="font-bold">82 chamados</span>
+</div>
+<div class="h-8 w-full bg-surface-container rounded-lg overflow-hidden flex">
+<div class="h-full bg-primary-container" style="width: 60%"></div>
+</div>
+</div>
+<!-- Chart Bar 3 -->
+<div class="space-y-xs">
+<div class="flex justify-between text-label-md">
+<span class="text-on-surface">Dermatologia</span>
+<span class="font-bold">56 chamados</span>
+</div>
+<div class="h-8 w-full bg-surface-container rounded-lg overflow-hidden flex">
+<div class="h-full bg-secondary" style="width: 45%"></div>
+</div>
+</div>
+<!-- Chart Bar 4 -->
+<div class="space-y-xs">
+<div class="flex justify-between text-label-md">
+<span class="text-on-surface">Ortopedia</span>
+<span class="font-bold">34 chamados</span>
+</div>
+<div class="h-8 w-full bg-surface-container rounded-lg overflow-hidden flex">
+<div class="h-full bg-outline" style="width: 30%"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- IA Configuration Panel -->
+<div class="bg-primary text-on-primary p-lg rounded-xl border border-primary-container shadow-lg flex flex-col">
+<div class="flex items-center gap-md mb-lg">
+<span class="material-symbols-outlined !text-3xl" data-icon="settings_input_component">settings_input_component</span>
+<h3 class="font-headline-sm text-headline-sm">Ajuste do Motor de IA</h3>
+</div>
+<div class="space-y-xl flex-grow">
+<div class="space-y-md">
+<div class="flex justify-between items-center">
+<label class="font-label-md text-label-md">Threshold de Confiança</label>
+<span class="font-bold text-headline-sm">85%</span>
+</div>
+<input class="w-full h-2 bg-primary-container rounded-lg appearance-none cursor-pointer accent-on-primary" max="100" min="0" type="range" value="85"/>
+<p class="text-label-sm opacity-80">Abaixo deste valor, o caso é enviado para auditoria manual obrigatória.</p>
+</div>
+<div class="space-y-md">
+<label class="font-label-md text-label-md">Provedor Atual</label>
+<select class="w-full bg-primary-container border-none rounded-lg text-on-primary py-md font-bold focus:ring-2 focus:ring-white">
+<option>OpenAI - GPT-4o</option>
+<option>V4H Custom Mock Engine</option>
+<option>Anthropic - Claude 3.5</option>
+</select>
+</div>
+</div>
+<button class="mt-xl w-full bg-white text-primary font-bold py-lg rounded-xl flex items-center justify-center gap-md hover:bg-on-primary-container transition-colors shadow-md">
+<span class="material-symbols-outlined" data-icon="save">save</span>
+                        Salvar Configuração
+                    </button>
+</div>
+</div>
+<!-- Bottom Row: Tables -->
+<div class="grid grid-cols-1 xl:grid-cols-2 gap-lg">
+<!-- Table 1: Logs de Triagem IA -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm overflow-hidden">
+<div class="p-lg border-b border-outline-variant flex justify-between items-center">
+<h3 class="font-headline-sm text-headline-sm">Logs de Triagem IA</h3>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer" data-icon="more_vert">more_vert</span>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead>
+<tr class="bg-surface-container-low border-b border-outline-variant">
+<th class="p-md font-label-md text-label-md text-on-surface-variant">Timestamp</th>
+<th class="p-md font-label-md text-label-md text-on-surface-variant">Paciente/ID</th>
+<th class="p-md font-label-md text-label-md text-on-surface-variant text-center">IA Score</th>
+<th class="p-md font-label-md text-label-md text-on-surface-variant">Decisão</th>
+<th class="p-md font-label-md text-label-md text-on-surface-variant text-right">Ação</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="p-md font-body-sm text-body-sm">14:23:45</td>
+<td class="p-md">
+<div class="flex flex-col">
+<span class="font-bold text-label-md">#PAC-8842</span>
+<span class="text-label-sm text-on-surface-variant">José Silva</span>
+</div>
+</td>
+<td class="p-md text-center">
+<span class="font-bold text-emerald-600">0.94</span>
+</td>
+<td class="p-md">
+<span class="bg-emerald-100 text-emerald-700 px-md py-xs rounded-full text-label-sm font-bold">Aprovado</span>
+</td>
+<td class="p-md text-right">
+<button class="text-primary hover:bg-primary-container/10 p-xs rounded-lg transition-colors">
+<span class="material-symbols-outlined" data-icon="visibility">visibility</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="p-md font-body-sm text-body-sm">14:20:12</td>
+<td class="p-md">
+<div class="flex flex-col">
+<span class="font-bold text-label-md">#PAC-9012</span>
+<span class="text-label-sm text-on-surface-variant">Ana Clara M.</span>
+</div>
+</td>
+<td class="p-md text-center">
+<span class="font-bold text-error">0.32</span>
+</td>
+<td class="p-md">
+<span class="bg-error-container text-on-error-container px-md py-xs rounded-full text-label-sm font-bold">Rejeitado</span>
+</td>
+<td class="p-md text-right">
+<button class="text-primary hover:bg-primary-container/10 p-xs rounded-lg transition-colors">
+<span class="material-symbols-outlined" data-icon="visibility">visibility</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="p-md font-body-sm text-body-sm">14:18:55</td>
+<td class="p-md">
+<div class="flex flex-col">
+<span class="font-bold text-label-md">#PAC-7761</span>
+<span class="text-label-sm text-on-surface-variant">Marcos Jr.</span>
+</div>
+</td>
+<td class="p-md text-center">
+<span class="font-bold text-orange-600">0.78</span>
+</td>
+<td class="p-md">
+<span class="bg-tertiary-fixed text-on-tertiary-fixed px-md py-xs rounded-full text-label-sm font-bold">Auditoria</span>
+</td>
+<td class="p-md text-right">
+<button class="text-primary hover:bg-primary-container/10 p-xs rounded-lg transition-colors">
+<span class="material-symbols-outlined" data-icon="visibility">visibility</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Table 2: Alertas de SLA -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm overflow-hidden">
+<div class="p-lg border-b border-outline-variant flex justify-between items-center">
+<h3 class="font-headline-sm text-headline-sm">Alertas de SLA</h3>
+<div class="flex items-center gap-md">
+<span class="bg-error text-white px-md py-xs rounded-full text-label-sm font-bold">3 Críticos</span>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead>
+<tr class="bg-surface-container-low border-b border-outline-variant">
+<th class="p-md font-label-md text-label-md text-on-surface-variant">ID</th>
+<th class="p-md font-label-md text-label-md text-on-surface-variant">Especialidade</th>
+<th class="p-md font-label-md text-label-md text-on-surface-variant">Tempo em Fila</th>
+<th class="p-md font-label-md text-label-md text-on-surface-variant">Status</th>
+<th class="p-md font-label-md text-label-md text-on-surface-variant text-right">Notificar</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<tr class="hover:bg-error/5 transition-colors">
+<td class="p-md font-bold text-label-md">#SLA-441</td>
+<td class="p-md text-body-sm">Cardiologia</td>
+<td class="p-md">
+<span class="text-error font-bold flex items-center gap-xs text-label-sm">
+<span class="material-symbols-outlined !text-sm" data-icon="priority_high">priority_high</span> 24h - Crítico
+                                        </span>
+</td>
+<td class="p-md">
+<div class="w-full bg-surface-container h-2 rounded-full">
+<div class="h-full bg-error rounded-full" style="width: 95%"></div>
+</div>
+</td>
+<td class="p-md text-right">
+<button class="bg-primary-container text-white px-md py-sm rounded-lg hover:bg-primary transition-colors text-label-sm font-bold">
+                                            Notify
+                                        </button>
+</td>
+</tr>
+<tr class="hover:bg-orange-50 transition-colors">
+<td class="p-md font-bold text-label-md">#SLA-552</td>
+<td class="p-md text-body-sm">Dermatologia</td>
+<td class="p-md">
+<span class="text-orange-600 font-bold flex items-center gap-xs text-label-sm">
+<span class="material-symbols-outlined !text-sm" data-icon="warning">warning</span> 12h - Alerta
+                                        </span>
+</td>
+<td class="p-md">
+<div class="w-full bg-surface-container h-2 rounded-full">
+<div class="h-full bg-orange-500 rounded-full" style="width: 70%"></div>
+</div>
+</td>
+<td class="p-md text-right">
+<button class="bg-primary-container text-white px-md py-sm rounded-lg hover:bg-primary transition-colors text-label-sm font-bold">
+                                            Notify
+                                        </button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="p-md font-bold text-label-md">#SLA-990</td>
+<td class="p-md text-body-sm">Ortopedia</td>
+<td class="p-md">
+<span class="text-on-surface-variant flex items-center gap-xs text-label-sm">
+<span class="material-symbols-outlined !text-sm" data-icon="schedule">schedule</span> 4h - Normal
+                                        </span>
+</td>
+<td class="p-md">
+<div class="w-full bg-surface-container h-2 rounded-full">
+<div class="h-full bg-primary rounded-full" style="width: 40%"></div>
+</div>
+</td>
+<td class="p-md text-right">
+<button class="bg-surface-container-high text-on-surface-variant px-md py-sm rounded-lg hover:bg-outline-variant transition-colors text-label-sm font-bold">
+                                            Notify
+                                        </button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Micro-interaction Script -->
+<script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Threshold slider logic
+            const slider = document.querySelector('input[type="range"]');
+            const sliderValue = slider.previousElementSibling.querySelector('span');
+            
+            slider.addEventListener('input', (e) => {
+                sliderValue.textContent = `${e.target.value}%`;
+                
+                // Visual feedback for high risk threshold
+                if(e.target.value > 90) {
+                    sliderValue.classList.add('text-error-container');
+                } else {
+                    sliderValue.classList.remove('text-error-container');
+                }
+            });
+
+            // Active Nav Logic
+            const navItems = document.querySelectorAll('nav a');
+            navItems.forEach(item => {
+                item.addEventListener('click', (e) => {
+                    navItems.forEach(i => {
+                        i.className = "flex items-center gap-md px-md py-sm rounded-xl transition-colors text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-primary-fixed hover:bg-surface-container-low dark:hover:bg-surface-variant scale-95 duration-150 ease-in-out";
+                    });
+                    item.className = "flex items-center gap-md px-md py-sm rounded-xl transition-colors text-primary dark:text-primary-fixed font-bold border-r-4 border-primary hover:bg-surface-container-low dark:hover:bg-surface-variant scale-95 duration-150 ease-in-out";
+                });
+            });
+        });
+    </script>
+</body></html>
