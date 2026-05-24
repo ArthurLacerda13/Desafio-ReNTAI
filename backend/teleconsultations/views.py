@@ -7,10 +7,12 @@ from .serializers import TeleconsultationSerializer, TeleconsultationCreateSeria
 from .services.ai_engine import AIEngineFactory
 from .filters import TeleconsultationFilter
 from django.conf import settings
+from django_filters import rest_framework as filters
 
 class TeleconsultationListCreateView(generics.ListCreateAPIView):
     permission_classes = (permissions.IsAuthenticated,)
     filterset_class = TeleconsultationFilter
+    filter_backends = (filters.DjangoFilterBackend,)
 
     def get_serializer_class(self):
         if self.request.method == 'POST':
@@ -19,21 +21,33 @@ class TeleconsultationListCreateView(generics.ListCreateAPIView):
 
     def get_queryset(self):
         user = self.request.user
+        queryset = Teleconsultation.objects.all()
+
+        if user.is_staff or user.is_superuser:
+            return queryset.order_by('-created_at')
+
         if user.role == 'SOLICITANTE':
-            return Teleconsultation.objects.filter(solicitante=user)
+            queryset = queryset.filter(solicitante=user)
         elif user.role == 'ESPECIALISTA':
-            # Specialists see pending cases in their area or cases assigned to them
-            queryset = Teleconsultation.objects.all()
+            # Base logic for specialists: pending in their area OR cases already assigned to them
+            specialty_q = Q()
             if user.specialty:
-                queryset = queryset.filter(specialty=user.specialty)
+                specialty_q = Q(specialty=user.specialty)
             
-            return queryset.filter(
+            queryset = queryset.filter(
                 Q(especialista=user) | 
-                Q(especialista__isnull=True, status=Teleconsultation.Status.PENDENTE)
+                (Q(especialista__isnull=True, status=Teleconsultation.Status.PENDENTE) & specialty_q)
             )
-        return Teleconsultation.objects.all()
+        
+        return queryset.order_by('-created_at')
 
     def create(self, request, *args, **kwargs):
+        if request.user.role != 'SOLICITANTE':
+            return Response(
+                {"detail": "Apenas Solicitantes podem abrir novas teleconsultorias."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+            
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         
@@ -89,6 +103,9 @@ class TeleconsultationDetailView(generics.RetrieveAPIView):
 
     def get_queryset(self):
         user = self.request.user
+        if user.is_staff or user.is_superuser:
+            return Teleconsultation.objects.all()
+            
         if user.role == 'SOLICITANTE':
             return Teleconsultation.objects.filter(solicitante=user)
         elif user.role == 'ESPECIALISTA':
@@ -99,7 +116,7 @@ class TeleconsultationDetailView(generics.RetrieveAPIView):
                 Q(especialista=user) | 
                 Q(especialista__isnull=True, status=Teleconsultation.Status.PENDENTE)
             )
-        return Teleconsultation.objects.all()
+        return Teleconsultation.objects.none()
 
 from django.http import HttpResponse
 from .services.pdf_generator import generate_teleconsultation_pdf
@@ -112,8 +129,9 @@ class TeleconsultationPDFView(generics.RetrieveAPIView):
         instance = self.get_object()
         
         # Check permissions: only the solicitante or an especialista assigned can download
-        if request.user.role == 'SOLICITANTE' and instance.solicitante != request.user:
-            return Response({"detail": "Não autorizado."}, status=status.HTTP_403_FORBIDDEN)
+        if not (request.user.is_staff or request.user.is_superuser):
+            if request.user.role == 'SOLICITANTE' and instance.solicitante != request.user:
+                return Response({"detail": "Não autorizado."}, status=status.HTTP_403_FORBIDDEN)
             
         pdf_content = generate_teleconsultation_pdf(instance)
         
@@ -127,14 +145,20 @@ class FeedbackCreateView(generics.CreateAPIView):
     serializer_class = FeedbackSerializer
     permission_classes = (permissions.IsAuthenticated,)
 
-    def perform_create(self, serializer):
+    def create(self, request, *args, **kwargs):
+        if request.user.role != 'ESPECIALISTA':
+            return Response({"detail": "Apenas especialistas podem emitir pareceres."}, status=status.HTTP_403_FORBIDDEN)
+            
         teleconsultation_id = self.kwargs.get('pk')
         teleconsultation = get_object_or_404(Teleconsultation, pk=teleconsultation_id)
         
-        # Only specialists can give feedback
-        if self.request.user.role != 'ESPECIALISTA':
-            return Response({"detail": "Only specialists can provide feedback."}, status=status.HTTP_403_FORBIDDEN)
-            
+        # Check if specialist can access this teleconsultation
+        if teleconsultation.specialty != request.user.specialty and teleconsultation.especialista != request.user:
+             if not (request.user.is_staff or request.user.is_superuser):
+                return Response({"detail": "Não autorizado para esta especialidade."}, status=status.HTTP_403_FORBIDDEN)
+
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
         serializer.save(teleconsultation=teleconsultation, specialist=self.request.user)
         
         # Update teleconsultation status
@@ -148,3 +172,5 @@ class FeedbackCreateView(generics.CreateAPIView):
             status=Teleconsultation.Status.CONCLUIDA,
             changed_by=self.request.user
         )
+        
+        return Response(serializer.data, status=status.HTTP_201_CREATED)

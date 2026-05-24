@@ -20,6 +20,7 @@ export default function RegisterPage() {
     first_name: '',
     last_name: '',
     role: 'SOLICITANTE',
+    specialty: '',
   });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -217,6 +218,26 @@ export default function RegisterPage() {
                   </button>
                 </div>
               </div>
+
+              {formData.role === 'ESPECIALISTA' && (
+                <div className="flex flex-col gap-1 animate-in fade-in slide-in-from-top-2 duration-300">
+                  <label className="text-sm font-semibold text-on-surface" htmlFor="specialty">Especialidade Médica</label>
+                  <select
+                    id="specialty"
+                    className="w-full px-3 py-2 bg-surface rounded-lg border border-outline-variant text-on-surface focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all outline-none appearance-none"
+                    value={formData.specialty}
+                    onChange={(e) => setFormData({ ...formData, specialty: e.target.value })}
+                    required
+                  >
+                    <option value="">Selecione sua especialidade</option>
+                    <option value="CARDIOLOGIA">Cardiologia</option>
+                    <option value="CIRURGIA_ROBOTICA">Cirurgia Robótica</option>
+                    <option value="ODONTOLOGIA">Odontologia</option>
+                    <option value="DOENCAS_RARAS">Doenças Raras</option>
+                    <option value="OXIGENOTERAPIA">Oxigenoterapia</option>
+                  </select>
+                </div>
+              )}
 
               <button
                 className="mt-4 w-full py-2.5 bg-primary text-white font-semibold rounded-lg hover:bg-opacity-90 transition-all shadow-md disabled:opacity-50"
