@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'corsheaders',
     'channels',
+    'django_filters',
     # Local apps
     'users.apps.UsersConfig',
     'teleconsultations.apps.TeleconsultationsConfig',
@@ -107,8 +108,9 @@ CHANNEL_LAYERS = {
 }
 
 # AI Configuration
-AI_THRESHOLD = os.getenv('AI_THRESHOLD', 0.6)
-AI_PROVIDER = os.getenv('AI_PROVIDER', 'MOCK')
+AI_THRESHOLD = float(os.getenv('AI_THRESHOLD', 0.60))
+AI_PROVIDER = os.getenv('AI_PROVIDER', 'REAL')
+
 
 # Static files (CSS, JavaScript, Images)
 
