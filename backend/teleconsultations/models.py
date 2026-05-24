@@ -115,3 +115,23 @@ class StatusHistory(models.Model):
         verbose_name = _('status history')
         verbose_name_plural = _('status histories')
         ordering = ['changed_at']
+
+class GlobalConfig(models.Model):
+    """
+    Dynamic configuration for the system, manageable by Admin.
+    """
+    ai_threshold = models.FloatField(default=0.60)
+    ai_provider = models.CharField(max_length=50, default='REAL')
+    updated_at = models.DateTimeField(auto_now=True)
+    updated_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True
+    )
+
+    class Meta:
+        verbose_name = _('global configuration')
+        verbose_name_plural = _('global configurations')
+
+    def __str__(self):
+        return f"Config (Threshold: {self.ai_threshold}, Provider: {self.ai_provider})"

@@ -1,8 +1,14 @@
 from rest_framework import serializers
-from .models import Teleconsultation, Attachment, Feedback, StatusHistory
+from .models import Teleconsultation, Attachment, Feedback, StatusHistory, GlobalConfig
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
+
+class GlobalConfigSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GlobalConfig
+        fields = ('ai_threshold', 'ai_provider', 'updated_at')
+        read_only_fields = ('updated_at',)
 
 class AttachmentSerializer(serializers.ModelSerializer):
     class Meta:

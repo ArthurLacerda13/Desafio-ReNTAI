@@ -1,9 +1,76 @@
-from django.db.models import Q
-from rest_framework import generics, permissions, status
+from django.db.models import Q, Avg, Count, F
+from django.utils import timezone
+from datetime import timedelta
+from rest_framework import generics, permissions, status, viewsets
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
-from .models import Teleconsultation, Attachment, Feedback, StatusHistory
-from .serializers import TeleconsultationSerializer, TeleconsultationCreateSerializer, FeedbackSerializer
+from .models import Teleconsultation, Attachment, Feedback, StatusHistory, GlobalConfig
+from .serializers import (
+    TeleconsultationSerializer, 
+    TeleconsultationCreateSerializer, 
+    FeedbackSerializer,
+    GlobalConfigSerializer
+)
+
+class AdminStatsView(generics.RetrieveAPIView):
+    permission_classes = (permissions.IsAdminUser,)
+
+    def get(self, request, *args, **kwargs):
+        # 1. AI Rejection Rate
+        all_attachments = Attachment.objects.all()
+        total_att = all_attachments.count()
+        rejected_att = all_attachments.filter(ai_score__lt=F('ai_threshold')).count()
+        rejection_rate = (rejected_att / total_att * 100) if total_att > 0 else 0
+
+        # 2. SLA: Average response time
+        completed_cases = Teleconsultation.objects.filter(status=Teleconsultation.Status.CONCLUIDA)
+        durations = []
+        for case in completed_cases:
+            # Simple duration between creation and last update (opinion)
+            duration = case.updated_at - case.created_at
+            durations.append(duration.total_seconds())
+        
+        avg_sla_seconds = sum(durations) / len(durations) if durations else 0
+        avg_sla_hours = round(avg_sla_seconds / 3600, 2)
+
+        # 3. Demand by Specialty
+        specialty_stats = Teleconsultation.objects.values('specialty').annotate(count=Count('id')).order_by('-count')
+
+        # 4. Critical SLA Alerts (> 24h pending)
+        critical_threshold = timezone.now() - timedelta(hours=24)
+        critical_cases = Teleconsultation.objects.filter(
+            status=Teleconsultation.Status.PENDENTE,
+            created_at__lt=critical_threshold
+        ).count()
+
+        return Response({
+            'kpis': {
+                'ai_rejection_rate': round(rejection_rate, 2),
+                'avg_sla_hours': avg_sla_hours,
+                'pending_cases': Teleconsultation.objects.filter(status=Teleconsultation.Status.PENDENTE).count(),
+                'critical_cases': critical_cases,
+                'active_specialists': get_user_model().objects.filter(role='ESPECIALISTA').count(),
+            },
+            'specialty_distribution': specialty_stats,
+            'ai_logs': Attachment.objects.order_by('-ai_timestamp')[:10].values(
+                'id', 'ai_score', 'ai_threshold', 'ai_provider', 'ai_timestamp', 'teleconsultation__patient_name'
+            )
+        })
+
+class GlobalConfigViewSet(viewsets.ModelViewSet):
+    queryset = GlobalConfig.objects.all()
+    serializer_class = GlobalConfigSerializer
+    permission_classes = (permissions.IsAdminUser,)
+
+    def get_object(self):
+        # We only have one global config
+        obj, created = GlobalConfig.objects.get_or_create(id=1)
+        return obj
+
+    def list(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
 from .services.ai_engine import AIEngineFactory
 from .filters import TeleconsultationFilter
 from django.conf import settings

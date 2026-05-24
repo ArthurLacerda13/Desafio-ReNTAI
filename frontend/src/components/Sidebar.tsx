@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { LayoutDashboard, PlusCircle, Heart, LogOut, User as UserIcon } from 'lucide-react';
+import { LayoutDashboard, PlusCircle, Heart, LogOut, User as UserIcon, ShieldCheck } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
@@ -19,6 +19,7 @@ export const Sidebar = () => {
   const navItems = [
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
     ...(user?.role === 'SOLICITANTE' ? [{ name: 'Nova Teleconsultoria', href: '/dashboard/new', icon: PlusCircle }] : []),
+    ...(user?.is_staff ? [{ name: 'Administração', href: '/dashboard/admin', icon: ShieldCheck }] : []),
   ];
 
   return (
@@ -33,7 +34,7 @@ export const Sidebar = () => {
             {user?.first_name || 'Usuário'}
           </div>
           <div className="text-xs font-medium text-secondary">
-            {user?.role === 'SOLICITANTE' ? 'Solicitante (APS)' : 'Especialista'}
+            {user?.is_staff ? 'Administrador' : (user?.role === 'SOLICITANTE' ? 'Solicitante (APS)' : 'Especialista')}
           </div>
         </div>
       </div>
