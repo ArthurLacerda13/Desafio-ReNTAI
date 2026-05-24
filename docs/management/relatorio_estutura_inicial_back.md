@@ -2,7 +2,7 @@
 
 **Data:** 20 de Maio de 2026  
 **Status:** Infraestrutura Base Concluída  
-**Responsável:** Engenheiro de Software Sênior (Gemini CLI)
+**Responsável:** (Gemini CLI)
 
 ## 1. Visão Geral
 Este documento detalha a infraestrutura inicial e as configurações de segurança implementadas para o backend do projeto ReNTAI. O foco principal foi estabelecer um ambiente robusto, escalável e seguro utilizando Docker e Django.

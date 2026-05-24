@@ -36,6 +36,7 @@ class TeleconsultationSerializer(serializers.ModelSerializer):
     solicitante_name = serializers.ReadOnlyField(source='solicitante.get_full_name')
     especialista_name = serializers.ReadOnlyField(source='especialista.get_full_name')
     attachments = AttachmentSerializer(many=True, read_only=True)
+    attachment = serializers.SerializerMethodField()
     feedback = FeedbackSerializer(read_only=True)
 
     class Meta:
@@ -43,9 +44,16 @@ class TeleconsultationSerializer(serializers.ModelSerializer):
         fields = (
             'id', 'solicitante', 'solicitante_name', 'especialista', 'especialista_name',
             'patient_name', 'patient_birth_date', 'specialty', 'diagnostic_hypothesis',
-            'clinical_history', 'status', 'created_at', 'updated_at', 'attachments', 'feedback'
+            'clinical_history', 'status', 'created_at', 'updated_at', 'attachments', 'attachment', 'feedback'
         )
         read_only_fields = ('id', 'solicitante', 'especialista', 'status', 'created_at', 'updated_at')
+
+    def get_attachment(self, obj):
+        # Provide a singular 'attachment' field for frontend compatibility
+        first_att = obj.attachments.first()
+        if first_att:
+            return AttachmentSerializer(first_att, context=self.context).data
+        return None
 
 class TeleconsultationCreateSerializer(serializers.ModelSerializer):
     class Meta:

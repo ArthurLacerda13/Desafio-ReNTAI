@@ -61,12 +61,15 @@ class Teleconsultation(models.Model):
 class Attachment(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     teleconsultation = models.ForeignKey(
-        Teleconsultation,
-        on_delete=models.CASCADE,
-        related_name='attachments'
+        Teleconsultation, 
+        on_delete=models.CASCADE, 
+        related_name='attachments',
+        null=True, 
+        blank=True
     )
     file = models.FileField(upload_to='attachments/%Y/%m/%d/')
-    
+    patient_name_cache = models.CharField(max_length=255, null=True, blank=True)
+
     # AI Validation Fields
     ai_score = models.FloatField(_('AI confidence score'), null=True, blank=True)
     ai_provider = models.CharField(_('AI provider'), max_length=100, null=True, blank=True)
@@ -74,7 +77,8 @@ class Attachment(models.Model):
     ai_timestamp = models.DateTimeField(_('AI validation timestamp'), null=True, blank=True)
 
     def __str__(self):
-        return f"Attachment for {self.teleconsultation.id}"
+        name = self.teleconsultation.patient_name if self.teleconsultation else self.patient_name_cache
+        return f"Attachment for {name} ({self.id})"
 
 
 class Feedback(models.Model):

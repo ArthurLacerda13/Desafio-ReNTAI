@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { 
   ArrowLeft, 
   User as UserIcon, 
@@ -10,7 +10,6 @@ import {
   Send, 
   CheckCircle, 
   ShieldAlert,
-  Edit3,
   Brain,
   MessageSquare,
   Download
@@ -64,7 +63,7 @@ export default function TeleconsultationDetailPage() {
   const { addNotification } = useNotifications();
   const router = useRouter();
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       const response = await api.get(`/teleconsultations/${id}/`);
       setData(response.data);
@@ -74,11 +73,11 @@ export default function TeleconsultationDetailPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id, router]);
 
   useEffect(() => {
     fetchData();
-  }, [id]);
+  }, [fetchData]);
 
   const handleFeedbackSubmit = async () => {
     if (!feedback.trim()) return;
@@ -120,6 +119,20 @@ export default function TeleconsultationDetailPage() {
       console.error('Failed to download PDF', error);
     } finally {
       setDownloading(false);
+    }
+  };
+
+  const handleViewFile = async (fileUrl: string) => {
+    try {
+      const response = await api.get(fileUrl, {
+        responseType: 'blob'
+      });
+      const blob = new Blob([response.data], { type: response.headers['content-type'] });
+      const url = window.URL.createObjectURL(blob);
+      window.open(url, '_blank');
+    } catch (error) {
+      console.error('Failed to view file', error);
+      addNotification('Falha ao abrir o documento. Verifique suas permissões.', 'info');
     }
   };
 
@@ -192,7 +205,7 @@ export default function TeleconsultationDetailPage() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left Column: Patient & Clinical Info */}
         <div className="lg:col-span-8 space-y-6">
-          <div className="bg-white border border-outline-variant rounded-xl p-6 shadow-sm">
+          <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 shadow-sm">
             <h2 className="text-xl font-semibold text-on-surface flex items-center gap-2 mb-6 border-b border-outline-variant pb-2">
               <FileText className="w-6 h-6 text-primary fill-current" />
               História Clínica e Hipótese
@@ -211,7 +224,7 @@ export default function TeleconsultationDetailPage() {
             </div>
           </div>
 
-          <div className="bg-white border border-outline-variant rounded-xl p-6 shadow-sm">
+          <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 shadow-sm">
             <h2 className="text-xl font-semibold text-on-surface flex items-center gap-2 mb-6 border-b border-outline-variant pb-2">
               <Paperclip className="w-6 h-6 text-primary" />
               Documentos e Validação IA
@@ -227,14 +240,12 @@ export default function TeleconsultationDetailPage() {
                       <span className="text-xs opacity-90">Qualidade Validada (IA)</span>
                     </div>
                   </div>
-                  <a 
-                    href={data.attachment.file_url} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
+                  <button 
+                    onClick={() => handleViewFile(data.attachment?.file_url || '')}
                     className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity"
                   >
-                    <span className="bg-white text-primary px-4 py-2 rounded-full text-sm font-bold shadow-lg">Visualizar Arquivo</span>
-                  </a>
+                    <span className="bg-white text-primary px-4 py-2 rounded-full text-sm font-bold shadow-lg cursor-pointer">Visualizar Arquivo</span>
+                  </button>
                 </div>
                 <div className="bg-surface-container-low rounded-xl border border-outline-variant p-4 flex flex-col justify-center gap-3">
                   <div className="flex items-center gap-2 text-primary">
@@ -261,7 +272,7 @@ export default function TeleconsultationDetailPage() {
 
         {/* Right Column: Timeline & Feedback */}
         <div className="lg:col-span-4 space-y-6">
-          <div className="bg-white border border-outline-variant rounded-xl p-6 shadow-sm">
+          <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 shadow-sm">
             <h2 className="text-sm font-bold text-on-surface uppercase tracking-wider mb-6 flex items-center gap-2">
               <Clock className="w-4 h-4" />
               Linha do Tempo
@@ -288,7 +299,7 @@ export default function TeleconsultationDetailPage() {
           </div>
 
           {/* Feedback Form / Display */}
-          <div className="bg-white border border-outline-variant rounded-xl p-6 shadow-sm flex flex-col relative overflow-hidden">
+          <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 shadow-sm flex flex-col relative overflow-hidden">
             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-secondary"></div>
             <h2 className="text-xl font-semibold text-on-surface flex items-center gap-2 mb-4">
               <MessageSquare className="w-6 h-6 text-primary" />

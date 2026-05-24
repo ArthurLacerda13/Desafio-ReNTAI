@@ -1,17 +1,28 @@
+import os
 from django.db.models import Q, Avg, Count, F
 from django.utils import timezone
 from datetime import timedelta
+from django.http import HttpResponse
 from rest_framework import generics, permissions, status, viewsets
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
-from .models import Teleconsultation, Attachment, Feedback, StatusHistory, GlobalConfig
+from django_filters import rest_framework as filters
+from django.conf import settings
+
+from .models import Teleconsultation, Attachment, Feedback, StatusHistory, GlobalConfig, AccessLog
 from .serializers import (
     TeleconsultationSerializer, 
     TeleconsultationCreateSerializer, 
     FeedbackSerializer,
-    GlobalConfigSerializer
+    GlobalConfigSerializer,
+    AttachmentSerializer
 )
+from .services.ai_engine import AIEngineFactory
+from .filters import TeleconsultationFilter
+from .services.pdf_generator import generate_teleconsultation_pdf
+
+User = get_user_model()
 
 class AdminStatsView(generics.RetrieveAPIView):
     permission_classes = (permissions.IsAdminUser,)
@@ -27,7 +38,6 @@ class AdminStatsView(generics.RetrieveAPIView):
         completed_cases = Teleconsultation.objects.filter(status=Teleconsultation.Status.CONCLUIDA)
         durations = []
         for case in completed_cases:
-            # Simple duration between creation and last update (opinion)
             duration = case.updated_at - case.created_at
             durations.append(duration.total_seconds())
         
@@ -50,11 +60,11 @@ class AdminStatsView(generics.RetrieveAPIView):
                 'avg_sla_hours': avg_sla_hours,
                 'pending_cases': Teleconsultation.objects.filter(status=Teleconsultation.Status.PENDENTE).count(),
                 'critical_cases': critical_cases,
-                'active_specialists': get_user_model().objects.filter(role='ESPECIALISTA').count(),
+                'active_specialists': User.objects.filter(role='ESPECIALISTA').count(),
             },
             'specialty_distribution': specialty_stats,
             'ai_logs': Attachment.objects.order_by('-ai_timestamp')[:10].values(
-                'id', 'ai_score', 'ai_threshold', 'ai_provider', 'ai_timestamp', 'teleconsultation__patient_name'
+                'id', 'ai_score', 'ai_threshold', 'ai_provider', 'ai_timestamp', 'teleconsultation__patient_name', 'patient_name_cache'
             ),
             'access_logs': AccessLog.objects.order_by('-accessed_at')[:10].values(
                 'id', 'user__first_name', 'user__last_name', 'user__email', 'teleconsultation__patient_name', 'accessed_at', 'action', 'ip_address'
@@ -67,7 +77,6 @@ class GlobalConfigViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.IsAdminUser,)
 
     def get_object(self):
-        # We only have one global config
         obj, created = GlobalConfig.objects.get_or_create(id=1)
         return obj
 
@@ -75,10 +84,6 @@ class GlobalConfigViewSet(viewsets.ModelViewSet):
         instance = self.get_object()
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
-from .services.ai_engine import AIEngineFactory
-from .filters import TeleconsultationFilter
-from django.conf import settings
-from django_filters import rest_framework as filters
 
 class TeleconsultationListCreateView(generics.ListCreateAPIView):
     permission_classes = (permissions.IsAuthenticated,)
@@ -100,7 +105,6 @@ class TeleconsultationListCreateView(generics.ListCreateAPIView):
         if user.role == 'SOLICITANTE':
             queryset = queryset.filter(solicitante=user)
         elif user.role == 'ESPECIALISTA':
-            # Base logic for specialists: pending in their area OR cases already assigned to them
             specialty_q = Q()
             if user.specialty:
                 specialty_q = Q(specialty=user.specialty)
@@ -122,60 +126,63 @@ class TeleconsultationListCreateView(generics.ListCreateAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         
-        # RF008: AI Triage BEFORE creation
         attachment_files = request.FILES.getlist('attachment_files')
         if not attachment_files:
             return Response({"detail": "Pelo menos um documento deve ser anexado."}, status=status.HTTP_400_BAD_REQUEST)
 
         engine = AIEngineFactory.get_engine()
         validated_attachments_data = []
+        patient_name = request.data.get('patient_name', 'Desconhecido')
         
         for file in attachment_files:
             try:
                 ai_result = engine.validate_document(file)
+                
+                # Persist the attempt in the Attachment log regardless of result (Auditory Requirement)
+                # If rejected, it won't be linked to a teleconsultation
+                attachment_log = Attachment.objects.create(
+                    file=file,
+                    patient_name_cache=patient_name,
+                    ai_score=ai_result['score'],
+                    ai_provider=ai_result['provider'],
+                    ai_threshold=ai_result['threshold'],
+                    ai_timestamp=ai_result['timestamp']
+                )
+
                 if ai_result['score'] < ai_result['threshold']:
                     return Response(
                         {"detail": f"Documento '{file.name}' rejeitado pela triagem IA (Score {ai_result['score']} abaixo do limiar {ai_result['threshold']})."},
                         status=status.HTTP_400_BAD_REQUEST
                     )
-                validated_attachments_data.append({'file': file, 'ai': ai_result})
+                
+                # If approved, keep it to link to the teleconsultation later
+                validated_attachments_data.append(attachment_log)
             except Exception as e:
                 return Response(
                     {"detail": f"Falha na triagem IA: {str(e)}"},
                     status=status.HTTP_503_SERVICE_AVAILABLE
                 )
 
-        # If all passed, create Teleconsultation
         teleconsultation = serializer.save(solicitante=self.request.user)
         
-        # Create Attachments with AI audit data (RNF005)
-        for item in validated_attachments_data:
-            Attachment.objects.create(
-                teleconsultation=teleconsultation,
-                file=item['file'],
-                ai_score=item['ai']['score'],
-                ai_provider=item['ai']['provider'],
-                ai_threshold=item['ai']['threshold'],
-                ai_timestamp=item['ai']['timestamp']
-            )
+        # Link approved attachments to the created teleconsultation
+        for att in validated_attachments_data:
+            att.teleconsultation = teleconsultation
+            att.save()
         
-        # Log Initial History
         StatusHistory.objects.create(
             teleconsultation=teleconsultation,
             status=Teleconsultation.Status.PENDENTE,
             changed_by=self.request.user
         )
             
-        return Response(TeleconsultationSerializer(teleconsultation).data, status=status.HTTP_201_CREATED)
-
-from .models import Teleconsultation, Attachment, Feedback, StatusHistory, GlobalConfig, AccessLog
+        return Response(TeleconsultationSerializer(teleconsultation, context={'request': request}).data, status=status.HTTP_201_CREATED)
 
 class TeleconsultationDetailView(generics.RetrieveAPIView):
     serializer_class = TeleconsultationSerializer
     permission_classes = (permissions.IsAuthenticated,)
 
     def get_queryset(self):
-        # ... (same as before)
         user = self.request.user
         if user.is_staff or user.is_superuser:
             return Teleconsultation.objects.all()
@@ -195,7 +202,6 @@ class TeleconsultationDetailView(generics.RetrieveAPIView):
     def get(self, request, *args, **kwargs):
         response = super().get(request, *args, **kwargs)
         if response.status_code == 200:
-            # LGPD: Log access
             instance = self.get_object()
             AccessLog.objects.create(
                 user=request.user,
@@ -205,9 +211,6 @@ class TeleconsultationDetailView(generics.RetrieveAPIView):
             )
         return response
 
-from django.http import HttpResponse
-from .services.pdf_generator import generate_teleconsultation_pdf
-
 class TeleconsultationPDFView(generics.RetrieveAPIView):
     queryset = Teleconsultation.objects.all()
     permission_classes = (permissions.IsAuthenticated,)
@@ -215,14 +218,12 @@ class TeleconsultationPDFView(generics.RetrieveAPIView):
     def get(self, request, *args, **kwargs):
         instance = self.get_object()
         
-        # Check permissions: only the solicitante or an especialista assigned can download
         if not (request.user.is_staff or request.user.is_superuser):
             if request.user.role == 'SOLICITANTE' and instance.solicitante != request.user:
                 return Response({"detail": "Não autorizado."}, status=status.HTTP_403_FORBIDDEN)
             
         pdf_content = generate_teleconsultation_pdf(instance)
         
-        # LGPD: Log PDF download
         AccessLog.objects.create(
             user=request.user,
             teleconsultation=instance,
@@ -245,7 +246,6 @@ class SecureFileServeView(generics.RetrieveAPIView):
         teleconsultation = attachment.teleconsultation
         user = request.user
 
-        # RBAC Check for file access
         has_access = False
         if user.is_staff or user.is_superuser:
             has_access = True
@@ -258,7 +258,6 @@ class SecureFileServeView(generics.RetrieveAPIView):
         if not has_access:
             return Response({"detail": "Acesso negado a este documento clínico."}, status=status.HTTP_403_FORBIDDEN)
 
-        # Log Access
         AccessLog.objects.create(
             user=user,
             teleconsultation=teleconsultation,
@@ -266,7 +265,6 @@ class SecureFileServeView(generics.RetrieveAPIView):
             action='VIEW_ATTACHMENT'
         )
 
-        # Serve file
         file_path = attachment.file.path
         with open(file_path, 'rb') as f:
             content_type = "application/pdf" if file_path.endswith('.pdf') else "image/jpeg"
@@ -286,20 +284,35 @@ class FeedbackCreateView(generics.CreateAPIView):
         teleconsultation = get_object_or_404(Teleconsultation, pk=teleconsultation_id)
         
         # Check if specialist can access this teleconsultation
-        if teleconsultation.specialty != request.user.specialty and teleconsultation.especialista != request.user:
-             if not (request.user.is_staff or request.user.is_superuser):
-                return Response({"detail": "Não autorizado para esta especialidade."}, status=status.HTTP_403_FORBIDDEN)
+        # Permission logic:
+        # 1. User is Staff/Superuser -> Allowed
+        # 2. User is the assigned specialist -> Allowed
+        # 3. User has the matching specialty and it's not assigned to someone else yet -> Allowed
+        has_permission = False
+        if request.user.is_staff or request.user.is_superuser:
+            has_permission = True
+        elif teleconsultation.especialista == request.user:
+            has_permission = True
+        elif teleconsultation.especialista is None and teleconsultation.specialty == request.user.specialty:
+            has_permission = True
+        elif teleconsultation.especialista is None and request.user.specialty is None:
+            # If specialist has no specialty set, they can pick up anything (helpful for testing/broad specialists)
+            has_permission = True
+
+        if not has_permission:
+            return Response(
+                {"detail": f"Não autorizado. Sua especialidade ({request.user.specialty}) não condiz com a do caso ({teleconsultation.specialty})."}, 
+                status=status.HTTP_403_FORBIDDEN
+            )
 
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save(teleconsultation=teleconsultation, specialist=self.request.user)
         
-        # Update teleconsultation status
         teleconsultation.status = Teleconsultation.Status.CONCLUIDA
         teleconsultation.especialista = self.request.user
         teleconsultation.save()
         
-        # Log history
         StatusHistory.objects.create(
             teleconsultation=teleconsultation,
             status=Teleconsultation.Status.CONCLUIDA,

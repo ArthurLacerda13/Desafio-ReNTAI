@@ -36,6 +36,11 @@ export const Sidebar = () => {
           <div className="text-xs font-medium text-secondary">
             {user?.is_staff ? 'Administrador' : (user?.role === 'SOLICITANTE' ? 'Solicitante (APS)' : 'Especialista')}
           </div>
+          {user?.role === 'ESPECIALISTA' && user?.specialty && (
+            <div className="text-[10px] font-bold text-primary-fixed-dim bg-primary/10 px-1.5 py-0.5 rounded mt-1 truncate inline-block">
+              {user.specialty}
+            </div>
+          )}
         </div>
       </div>
 

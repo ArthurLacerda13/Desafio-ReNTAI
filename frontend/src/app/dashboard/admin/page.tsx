@@ -219,13 +219,13 @@ export default function AdminDashboardPage() {
             <div className="space-y-4">
               <div className="flex justify-between items-center">
                 <label className="text-sm font-bold opacity-90">Threshold de Confiança</label>
-                <span className="text-3xl font-black">{(config.ai_threshold * 100).toFixed(0)}%</span>
+                <span className="text-3xl font-black">{((config.ai_threshold || 0) * 100).toFixed(0)}%</span>
               </div>
               <input 
                 type="range" 
                 max="100" 
                 min="0" 
-                value={config.ai_threshold * 100}
+                value={Math.round((config.ai_threshold || 0.6) * 100)}
                 onChange={(e) => setConfig({ ...config, ai_threshold: parseInt(e.target.value) / 100 })}
                 className="w-full h-2 bg-white/20 rounded-lg appearance-none cursor-pointer accent-white"
               />
@@ -285,11 +285,12 @@ export default function AdminDashboardPage() {
             <tbody className="divide-y divide-outline-variant">
               {stats.ai_logs.map((log) => {
                 const isApproved = log.ai_score >= log.ai_threshold;
+                const patientName = log.teleconsultation__patient_name || log.patient_name_cache || 'Desconhecido';
                 return (
                   <tr key={log.id} className="hover:bg-surface-container-low transition-colors group">
                     <td className="px-8 py-5">
                       <div className="flex flex-col">
-                        <span className="font-bold text-on-surface group-hover:text-primary transition-colors">{log.teleconsultation__patient_name}</span>
+                        <span className="font-bold text-on-surface group-hover:text-primary transition-colors">{patientName}</span>
                         <span className="text-[10px] text-on-surface-variant font-mono">ID: {log.id.slice(0, 8)}...</span>
                       </div>
                     </td>
