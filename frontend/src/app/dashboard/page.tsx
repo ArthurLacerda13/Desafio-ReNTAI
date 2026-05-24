@@ -73,11 +73,7 @@ function DashboardContent() {
         if (statusFilter) params.status = statusFilter;
         
         if (searchQuery) {
-          if (/^[0-9a-fA-F-]+$/.test(searchQuery) && searchQuery.length >= 4) {
-            params.id = searchQuery;
-          } else {
-            params.patient_name = searchQuery;
-          }
+          params.q = searchQuery;
         }
         
         if (periodFilter !== 'all') {
