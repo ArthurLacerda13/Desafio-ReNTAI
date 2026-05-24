@@ -37,6 +37,16 @@ interface Stats {
     ai_timestamp: string;
     teleconsultation__patient_name: string;
   }>;
+  access_logs: Array<{
+    id: string;
+    user__first_name: string;
+    user__last_name: string;
+    user__email: string;
+    teleconsultation__patient_name: string;
+    accessed_at: string;
+    action: string;
+    ip_address: string;
+  }>;
 }
 
 interface AIConfig {
@@ -310,6 +320,60 @@ export default function AdminDashboardPage() {
                   </tr>
                 );
               })}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Access Logs Table (LGPD Traceability) */}
+      <div className="bg-surface-container-lowest rounded-2xl border border-outline-variant shadow-sm overflow-hidden">
+        <div className="p-8 border-b border-outline-variant flex justify-between items-center bg-surface-container-low/50">
+          <div className="flex items-center gap-3">
+            <ShieldAlert className="text-primary w-6 h-6" />
+            <h3 className="text-xl font-bold text-on-surface">Rastreabilidade de Acesso (LGPD)</h3>
+          </div>
+          <div className="text-xs font-bold text-on-surface-variant">
+            ULTIMOS 10 ACESSOS
+          </div>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left">
+            <thead>
+              <tr className="bg-surface-container-low text-on-surface-variant border-b border-outline-variant">
+                <th className="px-8 py-5 text-xs font-bold uppercase tracking-widest">Usuário</th>
+                <th className="px-8 py-5 text-xs font-bold uppercase tracking-widest">Paciente Acessado</th>
+                <th className="px-8 py-5 text-xs font-bold uppercase tracking-widest text-center">Ação</th>
+                <th className="px-8 py-5 text-xs font-bold uppercase tracking-widest">IP</th>
+                <th className="px-8 py-5 text-xs font-bold uppercase tracking-widest text-right">Data/Hora</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-outline-variant">
+              {stats.access_logs.map((log) => (
+                <tr key={log.id} className="hover:bg-surface-container-low transition-colors group">
+                  <td className="px-8 py-5">
+                    <div className="flex flex-col">
+                      <span className="font-bold text-on-surface">{log.user__first_name} {log.user__last_name}</span>
+                      <span className="text-[10px] text-on-surface-variant font-mono">{log.user__email}</span>
+                    </div>
+                  </td>
+                  <td className="px-8 py-5 text-sm font-medium text-on-surface">
+                    {log.teleconsultation__patient_name}
+                  </td>
+                  <td className="px-8 py-5 text-center">
+                    <span className={`text-[10px] font-black px-2 py-1 rounded-full ${
+                      log.action === 'DOWNLOAD_PDF' ? 'bg-secondary-container text-on-secondary-container' : 'bg-surface-container-high text-on-surface-variant'
+                    }`}>
+                      {log.action}
+                    </span>
+                  </td>
+                  <td className="px-8 py-5 text-xs font-mono text-on-surface-variant">
+                    {log.ip_address}
+                  </td>
+                  <td className="px-8 py-5 text-right text-xs font-medium text-on-surface-variant">
+                    {new Date(log.accessed_at).toLocaleString('pt-BR')}
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>

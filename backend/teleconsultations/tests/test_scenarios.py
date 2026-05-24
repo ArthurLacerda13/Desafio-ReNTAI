@@ -126,3 +126,19 @@ class TeleconsultationScenariosTest(APITestCase):
         self.assertEqual(att.ai_threshold, 0.60)
         self.assertEqual(att.ai_provider, 'AUDIT_PROV')
         self.assertIsNotNone(att.ai_timestamp)
+
+    @patch('teleconsultations.services.ai_engine.MockAIEngine.validate_document')
+    def test_ai_rejection_scenario(self, mock_validate):
+        """RF008: Test rejection of teleconsultation when AI score is low"""
+        mock_validate.return_value = {
+            'score': 0.15, 'threshold': 0.60, 'provider': 'MOCK_IA', 'timestamp': '2026-05-24T12:00:00Z'
+        }
+        
+        self.client.force_authenticate(user=self.solicitante)
+        data = self.valid_payload.copy()
+        data['attachment_files'] = [self.attachment]
+        response = self.client.post(self.list_url, data, format='multipart')
+        
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("rejeitado pela triagem IA", response.data['detail'])
+        self.assertEqual(Teleconsultation.objects.count(), 0)

@@ -2,8 +2,10 @@ from io import BytesIO
 from reportlab.lib.pagesizes import A4
 from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image
 from reportlab.lib.units import cm
+import os
+from django.conf import settings
 
 def generate_teleconsultation_pdf(instance):
     buffer = BytesIO()
@@ -60,7 +62,27 @@ def generate_teleconsultation_pdf(instance):
     content.append(Spacer(1, 0.3*cm))
     content.append(Paragraph("<b>Histórico Clínico:</b>", styles['Normal']))
     content.append(Paragraph(instance.clinical_history, styles['Normal']))
-    content.append(Spacer(1, 1*cm))
+    content.append(Spacer(1, 0.5*cm))
+
+    # Inclusion of Attached Images (RF012 Enhancement)
+    attachments = instance.attachments.all()
+    images_found = False
+    for att in attachments:
+        ext = os.path.splitext(att.file.name)[1].lower()
+        if ext in ['.png', '.jpg', '.jpeg']:
+            if not images_found:
+                content.append(Paragraph("Anexos Fotográficos", section_style))
+                images_found = True
+            
+            try:
+                img_path = att.file.path
+                img = Image(img_path, width=12*cm, height=8*cm, kind='proportional')
+                content.append(img)
+                content.append(Spacer(1, 0.5*cm))
+            except Exception as e:
+                content.append(Paragraph(f"[Erro ao carregar imagem: {str(e)}]", styles['Italic']))
+
+    content.append(Spacer(1, 0.5*cm))
 
     # Specialist Feedback
     content.append(Paragraph("Parecer do Especialista", section_style))

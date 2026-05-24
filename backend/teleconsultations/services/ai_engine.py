@@ -6,6 +6,25 @@ from django.conf import settings
 from django.utils import timezone
 import io
 
+def get_current_config():
+    try:
+        from teleconsultations.models import GlobalConfig
+        config = GlobalConfig.objects.first()
+        if not config:
+            return {
+                'threshold': float(getattr(settings, 'AI_THRESHOLD', 0.60)),
+                'provider': getattr(settings, 'AI_PROVIDER', 'REAL').upper()
+            }
+        return {
+            'threshold': config.ai_threshold,
+            'provider': config.ai_provider.upper()
+        }
+    except:
+        return {
+            'threshold': 0.60,
+            'provider': 'REAL'
+        }
+
 class BaseAIEngine(ABC):
     @abstractmethod
     def validate_document(self, file_obj) -> dict:
@@ -30,12 +49,12 @@ class MockAIEngine(BaseAIEngine):
         else:
             score = round(random.uniform(0.7, 0.99), 2)
             
-        threshold = float(getattr(settings, 'AI_THRESHOLD', 0.6))
+        config = get_current_config()
         
         return {
             'score': score,
             'provider': 'MockAI-v1',
-            'threshold': threshold,
+            'threshold': config['threshold'],
             'timestamp': timezone.now()
         }
 
@@ -51,7 +70,8 @@ class LocalContentAIEngine(BaseAIEngine):
     ]
 
     def validate_document(self, file_obj) -> dict:
-        threshold = float(getattr(settings, 'AI_THRESHOLD', 0.6))
+        config = get_current_config()
+        threshold = config['threshold']
         provider = 'LocalNLP-v1 (PyMuPDF)'
         
         try:
@@ -115,22 +135,20 @@ class OpenAIEngine(BaseAIEngine):
     Note: Requires 'openai' library and OPENAI_API_KEY.
     """
     def validate_document(self, file_obj) -> dict:
-        # 1. Use LocalContentAIEngine's extraction logic (Omitted for brevity)
-        # 2. Send text to OpenAI API
-        # 3. Parse JSON response
-        
+        config = get_current_config()
         # Placeholder implementation for demonstration
         return {
             'score': 0.95,
             'provider': 'OpenAI GPT-4o',
-            'threshold': float(getattr(settings, 'AI_THRESHOLD', 0.6)),
+            'threshold': config['threshold'],
             'timestamp': timezone.now()
         }
 
 class AIEngineFactory:
     @staticmethod
     def get_engine() -> BaseAIEngine:
-        provider = getattr(settings, 'AI_PROVIDER', 'REAL').upper()
+        config = get_current_config()
+        provider = config['provider']
         if provider == 'OPENAI':
             return OpenAIEngine()
         if provider == 'REAL':

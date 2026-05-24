@@ -11,10 +11,19 @@ class GlobalConfigSerializer(serializers.ModelSerializer):
         read_only_fields = ('updated_at',)
 
 class AttachmentSerializer(serializers.ModelSerializer):
+    file_url = serializers.SerializerMethodField()
+
     class Meta:
         model = Attachment
-        fields = ('id', 'file', 'ai_score', 'ai_provider', 'ai_threshold', 'ai_timestamp')
+        fields = ('id', 'file', 'file_url', 'ai_score', 'ai_provider', 'ai_threshold', 'ai_timestamp')
         read_only_fields = ('ai_score', 'ai_provider', 'ai_threshold', 'ai_timestamp')
+
+    def get_file_url(self, obj):
+        request = self.context.get('request')
+        if request:
+            from django.urls import reverse
+            return request.build_absolute_uri(reverse('secure-file-serve', kwargs={'pk': obj.pk}))
+        return f"/api/teleconsultations/attachment/{obj.pk}/"
 
 class FeedbackSerializer(serializers.ModelSerializer):
     specialist_name = serializers.ReadOnlyField(source='specialist.get_full_name')

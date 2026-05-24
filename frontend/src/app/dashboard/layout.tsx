@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Sidebar } from '@/components/Sidebar';
 import { TopBar } from '@/components/TopBar';
 import { useAuth } from '@/contexts/AuthContext';
@@ -14,19 +14,27 @@ export default function DashboardLayout({
   const { user, loading } = useAuth();
   const router = useRouter();
 
-  if (loading) {
+  useEffect(() => {
+    // Only redirect if we are SURE loading is finished and there is no user
+    if (!loading && !user) {
+      console.log('[DashboardLayout] No user found, redirecting to login...');
+      router.replace('/login');
+    }
+  }, [user, loading, router]);
+
+  // While loading or if no user yet, show loader
+  if (loading || !user) {
     return (
       <div className="flex items-center justify-center h-screen bg-surface">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+        <div className="flex flex-col items-center gap-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+          <p className="text-sm font-medium text-on-surface-variant">Verificando acesso...</p>
+        </div>
       </div>
     );
   }
 
-  if (!user) {
-    router.push('/login');
-    return null;
-  }
-
+  // Once user is confirmed, render the dashboard
   return (
     <div className="min-h-screen bg-background">
       <Sidebar />

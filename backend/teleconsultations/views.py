@@ -4,6 +4,7 @@ from datetime import timedelta
 from rest_framework import generics, permissions, status, viewsets
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
+from django.contrib.auth import get_user_model
 from .models import Teleconsultation, Attachment, Feedback, StatusHistory, GlobalConfig
 from .serializers import (
     TeleconsultationSerializer, 
@@ -54,6 +55,9 @@ class AdminStatsView(generics.RetrieveAPIView):
             'specialty_distribution': specialty_stats,
             'ai_logs': Attachment.objects.order_by('-ai_timestamp')[:10].values(
                 'id', 'ai_score', 'ai_threshold', 'ai_provider', 'ai_timestamp', 'teleconsultation__patient_name'
+            ),
+            'access_logs': AccessLog.objects.order_by('-accessed_at')[:10].values(
+                'id', 'user__first_name', 'user__last_name', 'user__email', 'teleconsultation__patient_name', 'accessed_at', 'action', 'ip_address'
             )
         })
 
@@ -128,7 +132,7 @@ class TeleconsultationListCreateView(generics.ListCreateAPIView):
         
         for file in attachment_files:
             try:
-                ai_result = engine.validate_document(file.name)
+                ai_result = engine.validate_document(file)
                 if ai_result['score'] < ai_result['threshold']:
                     return Response(
                         {"detail": f"Documento '{file.name}' rejeitado pela triagem IA (Score {ai_result['score']} abaixo do limiar {ai_result['threshold']})."},
@@ -231,6 +235,44 @@ class TeleconsultationPDFView(generics.RetrieveAPIView):
         response['Content-Disposition'] = f'attachment; filename="{filename}"'
         
         return response
+
+class SecureFileServeView(generics.RetrieveAPIView):
+    queryset = Attachment.objects.all()
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request, *args, **kwargs):
+        attachment = self.get_object()
+        teleconsultation = attachment.teleconsultation
+        user = request.user
+
+        # RBAC Check for file access
+        has_access = False
+        if user.is_staff or user.is_superuser:
+            has_access = True
+        elif user.role == 'SOLICITANTE' and teleconsultation.solicitante == user:
+            has_access = True
+        elif user.role == 'ESPECIALISTA':
+            if teleconsultation.especialista == user or (teleconsultation.especialista is None and teleconsultation.specialty == user.specialty):
+                has_access = True
+
+        if not has_access:
+            return Response({"detail": "Acesso negado a este documento clínico."}, status=status.HTTP_403_FORBIDDEN)
+
+        # Log Access
+        AccessLog.objects.create(
+            user=user,
+            teleconsultation=teleconsultation,
+            ip_address=request.META.get('REMOTE_ADDR'),
+            action='VIEW_ATTACHMENT'
+        )
+
+        # Serve file
+        file_path = attachment.file.path
+        with open(file_path, 'rb') as f:
+            content_type = "application/pdf" if file_path.endswith('.pdf') else "image/jpeg"
+            response = HttpResponse(f.read(), content_type=content_type)
+            response['Content-Disposition'] = f'inline; filename="{os.path.basename(file_path)}"'
+            return response
 
 class FeedbackCreateView(generics.CreateAPIView):
     serializer_class = FeedbackSerializer

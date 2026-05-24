@@ -58,6 +58,7 @@ export default function TeleconsultationDetailPage() {
   const [loading, setLoading] = useState(true);
   const [feedback, setFeedback] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
   const [downloading, setDownloading] = useState(false);
   const { user } = useAuth();
   const { addNotification } = useNotifications();
@@ -84,8 +85,14 @@ export default function TeleconsultationDetailPage() {
     setSubmitting(true);
     try {
       await api.post(`/teleconsultations/${id}/feedback/`, { content: feedback });
+      setShowSuccess(true);
       addNotification('Parecer registrado com sucesso! O caso foi encerrado.', 'status_update');
-      fetchData();
+      
+      // Delay to show the success animation
+      setTimeout(() => {
+        setShowSuccess(false);
+        fetchData();
+      }, 2000);
     } catch (error) {
       console.error('Failed to submit feedback', error);
       addNotification('Falha ao registrar parecer. Tente novamente.', 'info');
@@ -131,6 +138,19 @@ export default function TeleconsultationDetailPage() {
 
   return (
     <div className="space-y-8 pb-10">
+      {/* Success Overlay */}
+      {showSuccess && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-background/80 backdrop-blur-sm animate-in fade-in duration-300">
+          <div className="bg-surface-container-lowest p-10 rounded-3xl shadow-2xl border border-outline-variant flex flex-col items-center gap-4 scale-in-center animate-in zoom-in-95 duration-300">
+            <div className="w-20 h-20 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center animate-bounce">
+              <CheckCircle className="w-12 h-12" />
+            </div>
+            <h3 className="text-2xl font-black text-on-surface">Parecer Registrado!</h3>
+            <p className="text-on-surface-variant font-medium">O caso foi concluído com sucesso.</p>
+          </div>
+        </div>
+      )}
+
       {/* Header Section */}
       <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
         <div className="space-y-2">
@@ -208,7 +228,7 @@ export default function TeleconsultationDetailPage() {
                     </div>
                   </div>
                   <a 
-                    href={`http://localhost:8081${data.attachment.file}`} 
+                    href={data.attachment.file_url} 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity"

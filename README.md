@@ -49,6 +49,26 @@ O sistema implementa rigorosos controles de acesso e rastreabilidade:
     - **Frontend:** `http://localhost:3000`
     - **API (Backend):** `http://localhost:8082`
 
+## 🚀 Refinamentos Recentes (Fase Final)
+
+Para atingir **100% de conformidade** com o edital, as seguintes melhorias foram aplicadas:
+*   **PDF com Anexos Fotográficos (RF012):** O gerador de pareceres agora inclui automaticamente imagens anexadas (PNG/JPG) no corpo do documento PDF.
+*   **Auditoria LGPD Visual:** Nova interface no Dashboard Admin para consulta em tempo real dos logs de acesso a dados sensíveis.
+*   **UX de Feedback:** Animação de sucesso e bloqueio de interface após a emissão de parecer para evitar envios duplicados e melhorar a percepção de conclusão pelo especialista.
+*   **Correção de Bug na IA:** O motor de triagem agora processa o fluxo binário do arquivo corretamente, garantindo validação real de conteúdo.
+
+---
+
+## 🛠️ Limitações e Decisões de Produção (Compliance Etapa 3)
+
+Embora o MVP esteja 100% funcional, em um cenário de produção real, as seguintes evoluções seriam aplicadas:
+
+1.  **Escalabilidade de Notificações:** Atualmente, o Django Channels utiliza o `InMemoryChannelLayer`. Para produção, seria obrigatório o uso do **Redis** como backplane para suportar múltiplos nós de backend e garantir que as notificações não se percam em caso de reinicialização do servidor.
+2.  **Processamento Pesado de IA:** A triagem por IA é executada de forma síncrona durante o upload. Para arquivos grandes ou volumes massivos, moveríamos essa lógica para tarefas em segundo plano (Worker Queue) via **Celery + Redis**, notificando o usuário via WebSocket apenas quando o processamento terminasse.
+3.  **Segurança de Arquivos Clínicos (LGPD):** Implementamos uma View de Segurança (`SecureFileServeView`) que valida o token JWT antes de servir qualquer anexo. Em produção, integraríamos essa View com o recurso de **X-Accel-Redirect (Nginx)** ou **Signed URLs (AWS S3/Google Cloud Storage)** para que o servidor de arquivos sirva os binários com performance sem expor links públicos.
+4.  **Assinatura Digital:** Para validade jurídica plena (ICP-Brasil), o parecer do especialista e o resumo em PDF deveriam ser assinados digitalmente com certificados digitais padrão A3.
+5.  **Audit Trail Avançado:** Expandiríamos o `AccessLog` para incluir hashes de integridade dos documentos, garantindo que o prontuário não foi alterado após a emissão do parecer.
+
 ---
 **Desenvolvedor:** Arthur Felipe Almeida Lacerda  
 **Consórcio:** LAVID/UFPB, RNP e FUNETEC-PB.

@@ -8,12 +8,14 @@ class TeleconsultationFilter(filters.FilterSet):
     
     status = filters.ChoiceFilter(choices=Teleconsultation.Status.choices)
     specialty = filters.ChoiceFilter(choices=Teleconsultation.Specialty.choices)
+    patient_name = filters.CharFilter(lookup_expr='icontains')
+    id = filters.CharFilter(lookup_expr='icontains')
     start_date = filters.DateFilter(field_name="created_at", lookup_expr='date__gte')
     end_date = filters.DateFilter(field_name="created_at", lookup_expr='date__lte')
 
     class Meta:
         model = Teleconsultation
-        fields = ['q', 'status', 'specialty', 'start_date', 'end_date']
+        fields = ['q', 'status', 'specialty', 'patient_name', 'id', 'start_date', 'end_date']
 
     def filter_by_all(self, queryset, name, value):
         if not value:
