@@ -10,6 +10,7 @@ interface User {
   first_name: string;
   last_name: string;
   role: 'SOLICITANTE' | 'ESPECIALISTA';
+  is_staff: boolean;
 }
 
 interface AuthContextType {
