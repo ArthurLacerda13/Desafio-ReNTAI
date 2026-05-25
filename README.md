@@ -19,7 +19,7 @@ O projeto está totalmente orquestrado via Docker Compose, garantindo que o ambi
 
 ### 2. Clonagem e Configuração
 ```bash
-git clone [URL_DO_REPOSITORIO]
+git clone https://github.com/ArthurLacerda13/Desafio-ReNTAI.git
 cd projeto
 ```
 
