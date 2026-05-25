@@ -8,76 +8,89 @@ title Esquema Relacional (MDR) - Módulo de Teleconsultoria (ReNTAI)
 entity "User" as user {
   * id : UUID <<PK>>
   --
-  * nome : VARCHAR(255)
   * email : VARCHAR(255) <<UNIQUE>>
-  * senha : VARCHAR(255)
-  * perfil : ENUM(SOLICITANTE, ESPECIALISTA, ADMIN)
-  * data_criacao : TIMESTAMP
+  * first_name : VARCHAR(150)
+  * last_name : VARCHAR(150)
+  * role : ENUM(SOLICITANTE, ESPECIALISTA)
+  * specialty : ENUM(...)
+  * is_staff : BOOLEAN
 }
 
-entity "Teleconsulta" as teleconsulta {
+entity "Teleconsultation" as teleconsulta {
   * id : UUID <<PK>>
   --
-  * iniciais_paciente : VARCHAR(10)
-  * data_nascimento : DATE
-  * historia_clinica : TEXT
-  * hipotese_diagnostica : TEXT
-  * especialidade : ENUM(CARDIOLOGIA, CIRURGIA_ROBOTICA, ODONTOLOGIA, DOENCAS_RARAS, OXIGENOTERAPIA)
+  * patient_name : VARCHAR(100)
+  * patient_birth_date : DATE
+  * clinical_history : TEXT
+  * diagnostic_hypothesis : VARCHAR(255)
+  * specialty : ENUM(...)
   * status : ENUM(PENDENTE, EM_ANDAMENTO, CONCLUIDA, CANCELADA)
-  * data_criacao : TIMESTAMP
+  * created_at : TIMESTAMP
   --
   * solicitante_id : UUID <<FK>>
   especialista_id : UUID <<FK>>
 }
 
-entity "AnexoClinico" as anexo {
+entity "Attachment" as anexo {
   * id : UUID <<PK>>
   --
-  * arquivo_path : VARCHAR(500)
-  * tipo_arquivo : VARCHAR(50)
-  * data_upload : TIMESTAMP
+  * file : VARCHAR(500)
+  * patient_name_cache : VARCHAR(255)
+  * ai_score : FLOAT
+  * ai_provider : VARCHAR(100)
+  * ai_threshold : FLOAT
+  * ai_timestamp : TIMESTAMP
   --
-  * teleconsulta_id : UUID <<FK>>
+  teleconsultation_id : UUID <<FK>>
 }
 
-entity "AuditoriaIA" as auditoria {
+entity "Feedback" as parecer {
   * id : UUID <<PK>>
   --
-  * score_confianca : DECIMAL(5,2)
-  * provedor : VARCHAR(100)
-  * limiar_utilizado : DECIMAL(5,2)
-  * timestamp_validacao : TIMESTAMP
-  * metadata_adicional : JSONB
+  * content : TEXT
+  * created_at : TIMESTAMP
   --
-  * anexo_id : UUID <<FK>>
+  * teleconsultation_id : UUID <<FK>>
+  * specialist_id : UUID <<FK>>
 }
 
-entity "ParecerTecnico" as parecer {
+entity "StatusHistory" as historico {
   * id : UUID <<PK>>
   --
-  * conteudo_texto : TEXT
-  * data_emissao : TIMESTAMP
+  * status : VARCHAR(50)
+  * changed_at : TIMESTAMP
   --
-  * teleconsulta_id : UUID <<FK>>
-  * especialista_id : UUID <<FK>>
+  * teleconsultation_id : UUID <<FK>>
+  * changed_by_id : UUID <<FK>>
 }
 
-entity "HistoricoStatus" as historico {
-  * id : UUID <<PK>>
+entity "AccessLog" as access {
+  * id : BIGINT <<PK>>
   --
-  * status_anterior : VARCHAR(50)
-  * status_novo : VARCHAR(50)
-  * data_alteracao : TIMESTAMP
+  * action : VARCHAR(50)
+  * ip_address : VARCHAR(45)
+  * accessed_at : TIMESTAMP
   --
-  * teleconsulta_id : UUID <<FK>>
+  * teleconsultation_id : UUID <<FK>>
+  * user_id : UUID <<FK>>
+}
+
+entity "GlobalConfig" as config {
+  * id : INT <<PK>>
+  --
+  * ai_threshold : FLOAT
+  * ai_provider : VARCHAR(50)
+  * updated_at : TIMESTAMP
 }
 
 ' Relacionamentos
 user ||--o{ teleconsulta : "inicia"
 user ||--o{ parecer : "emite"
-teleconsulta ||--|{ anexo : "possui"
+user ||--o{ access : "gera rastreabilidade"
+teleconsulta ||--o{ anexo : "possui"
 teleconsulta ||--o| parecer : "gera"
 teleconsulta ||--|{ historico : "registra timeline"
-anexo ||--o| auditoria : "auditado por"
+teleconsulta ||--o{ access : "alvo de acesso"
+anexo }o--|| teleconsulta : "pode ser vinculado"
 
 @enduml

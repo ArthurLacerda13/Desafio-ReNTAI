@@ -65,14 +65,16 @@ export default function RegisterPage() {
           src="https://images.unsplash.com/photo-1576091160550-2173dad99a01?q=80&w=2070&auto=format&fit=crop"
         />
         <div className="absolute inset-0 bg-gradient-to-br from-primary-container/20 to-surface/80"></div>
-        <div className="relative z-10 bg-white/70 backdrop-blur-xl border border-white/50 p-8 rounded-xl shadow-xl max-w-md text-center transform -translate-y-1/4">
-          <div className="flex items-center justify-center gap-2 mb-2 text-primary">
-            <Heart className="w-12 h-12 fill-current" />
+        <div className="relative z-10 bg-surface-container-lowest/80 backdrop-blur-xl border border-outline-variant p-8 rounded-2xl shadow-2xl max-w-md text-center transform -translate-y-1/4">
+          <div className="flex items-center justify-center gap-2 mb-4">
+            <div className="p-3 rounded-2xl bg-primary/10 text-primary shadow-inner">
+              <Heart className="w-12 h-12 fill-current" />
+            </div>
           </div>
-          <h1 className="text-5xl font-bold text-on-surface mb-1">V4H</h1>
-          <p className="text-xl font-semibold text-primary">ReNTAI</p>
-          <div className="w-12 h-1 bg-primary mx-auto my-4 rounded-full"></div>
-          <p className="text-lg text-on-surface-variant">Crie sua conta e comece a colaborar em rede.</p>
+          <h1 className="text-5xl font-black text-on-surface tracking-tighter mb-1">V4H</h1>
+          <p className="text-xl font-bold text-primary tracking-widest uppercase">ReNTAI</p>
+          <div className="w-16 h-1.5 bg-gradient-to-r from-transparent via-primary to-transparent mx-auto my-6 rounded-full opacity-50"></div>
+          <p className="text-lg text-on-surface-variant font-medium leading-relaxed">Crie sua conta e comece a colaborar em rede.</p>
         </div>
       </div>
 

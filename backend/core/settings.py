@@ -113,6 +113,13 @@ AI_PROVIDER = os.getenv('AI_PROVIDER', 'REAL')
 
 
 # Static files (CSS, JavaScript, Images)
+STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+# Media files (Clinical Attachments)
+MEDIA_URL = 'media/'
+MEDIA_ROOT = BASE_DIR / 'attachments'
+
 
 # REST Framework
 REST_FRAMEWORK = {

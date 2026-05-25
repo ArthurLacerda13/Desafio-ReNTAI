@@ -1,73 +1,123 @@
-# Módulo de Teleconsultoria com Validação Inteligente (Projeto ReNTAI)
+# ReNTAI - Módulo de Teleconsultoria com Validação Inteligente
 
-Este repositório contém o desenvolvimento do **Módulo de Teleconsultoria** para a plataforma **V4H (Video for Health)**, integrante do ecossistema **ReNTAI**. O sistema foi projetado para otimizar o fluxo de segunda opinião médica utilizando Inteligência Artificial para triagem automática de documentos.
+[![Licença: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Docker](https://img.shields.io/badge/Docker-Enabled-blue?logo=docker)](https://www.docker.com/)
+[![Framework: Django](https://img.shields.io/badge/Backend-Django_5.2-green?logo=django)](https://www.djangoproject.com/)
+[![Framework: Next.js](https://img.shields.io/badge/Frontend-Next.js_15-black?logo=next.js)](https://nextjs.org/)
 
----
-
-## 🤖 Etapa 4: Declaração de Uso de IA e Arquitetura
-
-Conforme exigido pelo edital (Seção 2.4 e Etapa 4), declaramos o uso de Inteligência Artificial para a **Triagem Automática e Validação Inteligente** de anexos clínicos.
-
-### Arquitetura de IA (Strategy Pattern)
-O sistema foi implementado utilizando o padrão de projeto **Strategy**, permitindo que o motor de IA seja agnóstico ao provedor. Isso garante escalabilidade e conformidade com diferentes cenários de infraestrutura.
-
-#### Motores Disponíveis:
-1.  **LocalContentAIEngine (Padrão):** Um motor de processamento de linguagem natural (NLP) que roda localmente usando a biblioteca `PyMuPDF`. Ele extrai o texto dos documentos PDF e analisa a presença de marcadores clínicos (como CID, Diagnóstico, CPF do paciente).
-    *   *Vantagem:* Baixo custo e total privacidade de dados (Conformidade LGPD).
-2.  **OpenAIEngine (Pronto para Produção):** Uma estratégia que integra o sistema ao modelo **GPT-4o** da OpenAI para uma análise semântica profunda.
-3.  **MockAIEngine:** Utilizado para testes e homologação de fluxos sem consumo de recursos.
-
-### Governança e Auditabilidade (RNF005)
-O administrador do sistema possui controle total sobre a IA através do **Dashboard de Auditoria**, onde pode:
-*   Ajustar o **Threshold de Confiança** em tempo real.
-*   Alternar entre Provedores de IA sem downtime.
-*   Visualizar logs detalhados de cada decisão tomada pela IA (Score, Provedor e Timestamp).
+Este repositório contém a solução completa para o **Desafio Técnico P01 - Desenvolvedor Fullstack** do projeto **ReNTAI (Plataforma V4H)**. O sistema permite a solicitação de segundas opiniões médicas, triagem automatizada por IA, e emissão de pareceres especializados em tempo real.
 
 ---
 
-## 🛡️ Segurança e Rastreabilidade (LGPD)
+## 🚀 Como Executar (Quick Start)
 
-O sistema implementa rigorosos controles de acesso e rastreabilidade:
-*   **RBAC (Role-Based Access Control):** Diferenciação rígida entre Solicitante, Especialista e Admin.
-*   **AccessLogs (Novo):** Todas as visualizações de dados sensíveis e downloads de pareceres são registrados em um log de auditoria imutável, identificando o usuário, o IP e o timestamp da ação.
+O projeto está totalmente orquestrado via Docker Compose, garantindo que o ambiente do revisor seja idêntico ao de desenvolvimento.
 
----
-
-## 🚀 Como Executar
-
-### Pré-requisitos
+### 1. Pré-requisitos
 - Docker e Docker Compose instalados.
+- Git instalado.
 
-### Passos
-1.  Clone o repositório.
-2.  Configure o arquivo `.env` (use o `.env.example` como base).
-3.  Execute o comando:
-    ```bash
-    docker-compose up --build
-    ```
-4.  Acesse:
-    - **Frontend:** `http://localhost:3000`
-    - **API (Backend):** `http://localhost:8082`
+### 2. Clonagem e Configuração
+```bash
+git clone [URL_DO_REPOSITORIO]
+cd projeto
+```
 
-## 🚀 Refinamentos Recentes (Fase Final)
+### 3. Execução
+Execute o comando abaixo na raiz do projeto:
+```bash
+docker-compose up --build
+```
+*A primeira execução pode levar alguns minutos enquanto baixa as imagens e instala as dependências.*
 
-Para atingir **100% de conformidade** com o edital, as seguintes melhorias foram aplicadas:
-*   **PDF com Anexos Fotográficos (RF012):** O gerador de pareceres agora inclui automaticamente imagens anexadas (PNG/JPG) no corpo do documento PDF.
-*   **Auditoria LGPD Visual:** Nova interface no Dashboard Admin para consulta em tempo real dos logs de acesso a dados sensíveis.
-*   **UX de Feedback:** Animação de sucesso e bloqueio de interface após a emissão de parecer para evitar envios duplicados e melhorar a percepção de conclusão pelo especialista.
-*   **Correção de Bug na IA:** O motor de triagem agora processa o fluxo binário do arquivo corretamente, garantindo validação real de conteúdo.
+### 4. Acesso ao Sistema
+- **Frontend:** [http://localhost:3000](http://localhost:3000)
+- **Backend (API):** [http://localhost:8082](http://localhost:8082)
+- **Painel Admin Django:** [http://localhost:8082/admin/](http://localhost:8082/admin/)
+
+### 🔑 Credenciais de Acesso (Instalação Limpa)
+O banco de dados foi resetado para a homologação com um único usuário mestre:
+- **Login:** `admin@gmail.com`
+- **Senha:** `admin123`
+*(Este usuário possui perfil de Administrador e Especialista para facilitar o teste de todos os fluxos).*
 
 ---
 
-## 🛠️ Limitações e Decisões de Produção (Compliance Etapa 3)
+## 🛠️ Tecnologias e Arquitetura
 
-Embora o MVP esteja 100% funcional, em um cenário de produção real, as seguintes evoluções seriam aplicadas:
+- **Backend:** Python 3.13, Django 5.2, Django REST Framework.
+- **Real-time:** Django Channels + WebSockets (notificações instantâneas).
+- **Frontend:** React 19, Next.js 15, Tailwind CSS, Material Design 3.
+- **Banco de Dados:** PostgreSQL 15 (Relacional) e Redis (Broker de Mensagens).
+- **Processamento de Documentos:** PyMuPDF (Extração de metadados clínicos).
 
-1.  **Escalabilidade de Notificações:** Atualmente, o Django Channels utiliza o `InMemoryChannelLayer`. Para produção, seria obrigatório o uso do **Redis** como backplane para suportar múltiplos nós de backend e garantir que as notificações não se percam em caso de reinicialização do servidor.
-2.  **Processamento Pesado de IA:** A triagem por IA é executada de forma síncrona durante o upload. Para arquivos grandes ou volumes massivos, moveríamos essa lógica para tarefas em segundo plano (Worker Queue) via **Celery + Redis**, notificando o usuário via WebSocket apenas quando o processamento terminasse.
-3.  **Segurança de Arquivos Clínicos (LGPD):** Implementamos uma View de Segurança (`SecureFileServeView`) que valida o token JWT antes de servir qualquer anexo. Em produção, integraríamos essa View com o recurso de **X-Accel-Redirect (Nginx)** ou **Signed URLs (AWS S3/Google Cloud Storage)** para que o servidor de arquivos sirva os binários com performance sem expor links públicos.
-4.  **Assinatura Digital:** Para validade jurídica plena (ICP-Brasil), o parecer do especialista e o resumo em PDF deveriam ser assinados digitalmente com certificados digitais padrão A3.
-5.  **Audit Trail Avançado:** Expandiríamos o `AccessLog` para incluir hashes de integridade dos documentos, garantindo que o prontuário não foi alterado após a emissão do parecer.
+---
+
+## 🤖 Inteligência Artificial (Seção 2.4)
+
+Implementamos uma arquitetura agnóstica de IA baseada no padrão **Strategy**. 
+
+- **Motor Local (Padrão):** Realiza processamento de linguagem natural (NLP) local para identificar palavras-chave clínicas (CID, Diagnóstico, CPF) em arquivos PDF, garantindo **privacidade total de dados** (Compliance LGPD).
+- **Threshold Dinâmico:** O Administrador pode ajustar a sensibilidade da IA (ex: 60%) diretamente pelo Dashboard de Auditoria. Documentos com score abaixo do limite são registrados mas bloqueiam a criação da consulta.
+- **Logs de Auditoria IA:** Todas as tentativas de upload (aprovadas ou rejeitadas) são salvas com score, provedor e timestamp para rastreabilidade algorítmica.
+
+---
+
+## 🛡️ Segurança e LGPD (Compliance SUS)
+
+- **Secure File Serving:** Documentos clínicos sensíveis **não são públicos**. O acesso a cada arquivo PDF ou imagem requer autenticação JWT e validação de permissão RBAC (Role-Based Access Control).
+- **Rastreabilidade:** Implementação de `AccessLog` que registra quem visualizou ou baixou qual documento, incluindo IP e timestamp.
+- **Isolamento de Dados:** Solicitantes só visualizam seus próprios casos; Especialistas visualizam casos de sua área.
+
+---
+
+## 📄 Relatório de Conformidade (Checklist do Edital)
+
+| Requisito | Descrição | Status |
+| :--- | :--- | :---: |
+| **RF001** | Cadastro de usuários com seleção de perfil | ✅ |
+| **RF002** | Dashboard reativo para Solicitantes e Especialistas | ✅ |
+| **RF005** | Triagem automática inteligente de anexos clínicos | ✅ |
+| **RF008** | Configuração dinâmica de IA via Dashboard Admin | ✅ |
+| **RF012** | Geração de parecer em PDF com suporte a imagens | ✅ |
+| **RNF002** | Sincronismo visual via WebSockets (Sem Refresh) | ✅ |
+| **Restrição 5** | Orquestração Docker Compose Uniforme | ✅ |
+
+---
+
+## 🏗️ Estrutura do Repositório
+
+```text
+├── backend/            # API Django e Lógica de IA
+├── frontend/           # Interface Next.js (App Router)
+├── docs/
+│   ├── architecture/   # Diagramas C4 e MDR (PUML)
+│   ├── adr/            # Registros de Decisões de Arquitetura
+│   ├── management/     # Relatórios de Desenvolvimento e Status
+│   └── requirements/   # Documentação de Requisitos extraída
+├── docker-compose.yml  # Orquestração do ambiente
+└── README.md           # Este guia
+```
+
+---
+
+## ⚠️ Limitações de Produção
+
+Para este desafio técnico, algumas decisões foram tomadas visando simplicidade de setup:
+1. **Channel Layer:** Utiliza `InMemoryChannelLayer`. Para produção em escala, o `RedisChannelLayer` deve ser habilitado no `settings.py`.
+2. **Assinatura Digital:** O PDF gerado é um registro eletrônico, mas carece de assinatura padrão ICP-Brasil para validade jurídica plena.
+3. **Storage:** Arquivos são salvos localmente (Volume Docker). Recomenda-se migrar para **AWS S3** ou **Google Cloud Storage** para resiliência.
+
+---
+
+## 🤖 Declaração de Uso de IA (Edital)
+
+Em conformidade com as diretrizes do edital, declaramos que ferramentas de Inteligência Artificial Generativa (como Gemini CLI e GitHub Copilot) foram utilizadas durante o ciclo de desenvolvimento deste projeto para:
+1. **Produtividade de Código:** Auxílio na escrita de componentes Boilerplate e testes unitários.
+2. **Documentação:** Estruturação inicial de arquivos técnicos e revisão gramatical.
+3. **Refatoração:** Sugestões de otimização de algoritmos e padrões de design.
+
+*O uso destas ferramentas serviu como co-piloto, sendo todas as decisões arquiteturais, lógicas de negócio e implementações críticas revisadas e validadas integralmente pelo desenvolvedor responsável.*
 
 ---
 **Desenvolvedor:** Arthur Felipe Almeida Lacerda  
