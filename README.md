@@ -21,6 +21,7 @@ O projeto está totalmente orquestrado via Docker Compose, garantindo que o ambi
 ```bash
 git clone https://github.com/ArthurLacerda13/Desafio-ReNTAI.git
 cd Desafio-ReNTAI
+renomeie .env.exemplo para .env
 ```
 
 ### 3. Execução
